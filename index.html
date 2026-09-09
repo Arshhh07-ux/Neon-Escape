@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+      content="width=device-width,initial-scale=1.0,user-scalable=no">
 
-<title>NEON ESCAPE — The Last Survivor</title>
+<title>NEON ESCAPE — 3D</title>
 
 <style>
 *{
@@ -13,19 +13,14 @@
   margin:0;
   padding:0;
   -webkit-tap-highlight-color:transparent;
-  user-select:none;
 }
 
 html,body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#050612;
+  background:#02030a;
   font-family:Arial,Helvetica,sans-serif;
-}
-
-body{
-  touch-action:none;
 }
 
 #game{
@@ -34,15 +29,13 @@ body{
   width:100%;
   height:100%;
   display:block;
-  background:#050612;
 }
 
 #hud{
   position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  padding:14px;
+  top:15px;
+  left:15px;
+  right:15px;
   display:flex;
   justify-content:space-between;
   align-items:flex-start;
@@ -50,290 +43,239 @@ body{
   z-index:10;
 }
 
-.panel{
-  min-width:120px;
-  padding:10px 14px;
-  border:1px solid rgba(100,220,255,.35);
-  border-radius:15px;
-  background:rgba(5,8,25,.68);
-  backdrop-filter:blur(10px);
-  box-shadow:
-    0 0 20px rgba(0,220,255,.12),
-    inset 0 0 20px rgba(80,0,255,.08);
+.box{
+  min-width:95px;
+  padding:9px 13px;
+  margin-bottom:7px;
+  border:1px solid rgba(0,240,255,.35);
+  border-radius:13px;
+  background:rgba(3,8,20,.68);
+  backdrop-filter:blur(12px);
+  box-shadow:0 0 18px rgba(0,220,255,.15);
+  color:white;
 }
 
 .label{
   font-size:10px;
-  color:#91a4c7;
   letter-spacing:2px;
+  opacity:.65;
 }
 
 .value{
-  margin-top:2px;
-  color:#fff;
-  font-size:20px;
+  font-size:22px;
   font-weight:900;
-  text-shadow:0 0 12px #00d9ff;
+  color:#63f8ff;
+  text-shadow:0 0 12px #00eaff;
 }
 
-#energyBox{
-  width:150px;
+#energyWrap{
+  width:145px;
 }
 
-.energyOuter{
+#energy{
   width:100%;
   height:8px;
-  margin-top:6px;
+  margin-top:7px;
   overflow:hidden;
-  border-radius:20px;
-  background:#171b32;
+  border-radius:10px;
+  background:#18202c;
 }
 
 #energyBar{
-  height:100%;
   width:100%;
-  border-radius:20px;
-  background:linear-gradient(90deg,#00eaff,#9b4dff);
-  box-shadow:0 0 12px #00dfff;
-  transition:width .15s;
+  height:100%;
+  background:linear-gradient(90deg,#00eaff,#7aff9a);
+  box-shadow:0 0 12px #00eaff;
 }
 
-#pauseBtn{
+#pause{
   pointer-events:auto;
-  width:44px;
-  height:44px;
-  margin-left:8px;
-  border:1px solid rgba(255,255,255,.2);
+  width:45px;
+  height:45px;
+  border:1px solid #00eaff;
   border-radius:14px;
-  background:rgba(10,14,35,.75);
+  background:rgba(0,15,30,.75);
   color:white;
-  font-size:18px;
+  font-size:19px;
 }
 
 #screen{
   position:fixed;
   inset:0;
-  z-index:30;
+  z-index:20;
   display:flex;
-  justify-content:center;
   align-items:center;
-  padding:20px;
+  justify-content:center;
   background:
-    radial-gradient(circle at 50% 45%,
-      rgba(77,0,150,.24),
-      rgba(0,0,0,.82) 70%);
+    radial-gradient(circle at center,
+    rgba(0,220,255,.12),
+    rgba(0,0,0,.78) 55%,
+    #02030a);
 }
 
 .card{
-  width:min(560px,94vw);
-  max-height:92vh;
-  overflow:auto;
-  padding:28px;
+  width:min(430px,90vw);
+  padding:30px;
+  border:1px solid rgba(0,238,255,.35);
+  border-radius:25px;
+  background:rgba(5,9,22,.82);
+  backdrop-filter:blur(20px);
   text-align:center;
-  border:1px solid rgba(92,226,255,.35);
-  border-radius:28px;
-  background:rgba(7,10,30,.86);
+  color:white;
   box-shadow:
-    0 0 60px rgba(0,170,255,.18),
-    inset 0 0 50px rgba(100,0,255,.08);
-  backdrop-filter:blur(18px);
+    0 0 60px rgba(0,220,255,.15),
+    inset 0 0 30px rgba(255,255,255,.025);
+}
+
+.card.hidden{
+  display:none;
 }
 
 .logo{
-  font-size:clamp(34px,9vw,64px);
+  font-size:38px;
+  line-height:.95;
   font-weight:1000;
-  letter-spacing:4px;
+  letter-spacing:3px;
   color:#fff;
   text-shadow:
     0 0 8px #00eaff,
-    0 0 25px #008cff,
-    0 0 50px #873cff;
+    0 0 30px #007bff;
 }
 
-.subtitle{
-  margin-top:8px;
-  color:#7feaff;
+.sub{
+  margin-top:12px;
+  margin-bottom:22px;
+  color:#70efff;
   letter-spacing:4px;
   font-size:11px;
 }
 
-.description{
-  margin:20px auto;
-  max-width:430px;
-  color:#aebbd7;
-  line-height:1.6;
-  font-size:14px;
+.world{
+  color:#a8b8c9;
+  margin-bottom:22px;
+  font-size:13px;
 }
 
-.bigButton{
+.mainBtn{
   width:100%;
-  max-width:360px;
-  padding:16px 24px;
-  margin:8px auto;
-  display:block;
   border:0;
-  border-radius:17px;
-  color:white;
+  padding:16px;
+  margin-top:10px;
+  border-radius:15px;
+  font-size:16px;
   font-weight:900;
   letter-spacing:2px;
-  font-size:14px;
-  background:linear-gradient(100deg,#006eff,#8c28ff);
+  color:#001018;
+  background:linear-gradient(135deg,#6fffff,#00bfff);
   box-shadow:
-    0 0 25px rgba(0,126,255,.3),
-    inset 0 1px rgba(255,255,255,.25);
-  cursor:pointer;
+    0 0 20px rgba(0,230,255,.45),
+    inset 0 1px 0 white;
 }
 
-.bigButton:active{
+.mainBtn:active{
   transform:scale(.97);
 }
 
-.secondary{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.14);
-}
-
-.hidden{
-  display:none !important;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
+#characterList{
+  display:flex;
   gap:8px;
-  margin:15px 0;
+  margin-bottom:15px;
 }
 
-.stat{
-  padding:12px 5px;
-  border-radius:14px;
-  background:rgba(255,255,255,.045);
-}
-
-.stat b{
-  display:block;
-  font-size:20px;
+.character{
+  flex:1;
+  padding:9px 4px;
+  border:1px solid #20394a;
+  border-radius:12px;
+  background:#08111d;
   color:white;
-}
-
-.stat span{
   font-size:9px;
-  letter-spacing:1px;
-  color:#8291b2;
 }
 
-#mission{
-  margin:12px auto;
-  width:min(360px,100%);
-  padding:10px 14px;
-  text-align:left;
-  border:1px solid rgba(255,218,75,.2);
-  border-radius:13px;
-  background:rgba(255,210,50,.045);
-}
-
-.missionTitle{
-  color:#ffe65a;
-  font-size:10px;
-  letter-spacing:2px;
-}
-
-#missionText{
-  color:#dbe5ff;
-  font-size:12px;
-  margin-top:5px;
-}
-
-#controls{
-  position:fixed;
-  bottom:18px;
-  left:0;
-  width:100%;
-  padding:0 18px;
-  display:flex;
-  justify-content:space-between;
-  pointer-events:none;
-  z-index:15;
-}
-
-.controlGroup{
-  display:flex;
-  gap:10px;
-}
-
-.control{
-  pointer-events:auto;
-  width:62px;
-  height:58px;
-  border:1px solid rgba(100,220,255,.25);
-  border-radius:18px;
-  background:rgba(7,11,30,.65);
-  color:white;
-  font-size:23px;
-  box-shadow:0 0 20px rgba(0,160,255,.08);
-  backdrop-filter:blur(8px);
-}
-
-.control:active{
-  transform:scale(.91);
-  background:rgba(40,80,150,.55);
+.character.active{
+  border-color:#00eaff;
+  box-shadow:0 0 14px rgba(0,234,255,.35);
 }
 
 #message{
   position:fixed;
-  top:24%;
+  z-index:15;
   left:50%;
-  transform:translateX(-50%);
-  z-index:20;
-  padding:10px 20px;
-  border-radius:30px;
-  color:white;
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:2px;
-  background:rgba(5,8,25,.72);
-  border:1px solid rgba(100,220,255,.3);
-  box-shadow:0 0 30px rgba(0,210,255,.15);
+  top:21%;
+  transform:translate(-50%,-50%) scale(.7);
   opacity:0;
+  pointer-events:none;
+  color:white;
+  font-size:28px;
+  font-weight:1000;
+  letter-spacing:4px;
+  text-shadow:0 0 20px #00eaff;
+  transition:.25s;
+}
+
+#message.show{
+  opacity:1;
+  transform:translate(-50%,-50%) scale(1);
+}
+
+#controls{
+  position:fixed;
+  z-index:12;
+  left:0;
+  right:0;
+  bottom:20px;
+  display:flex;
+  justify-content:center;
+  gap:14px;
   pointer-events:none;
 }
 
-#characterSelect{
-  display:flex;
-  justify-content:center;
-  gap:10px;
-  margin:15px 0;
-  flex-wrap:wrap;
-}
-
-.char{
-  width:76px;
-  height:82px;
-  padding:5px;
-  border-radius:15px;
-  border:1px solid rgba(255,255,255,.1);
-  background:rgba(255,255,255,.04);
+.control{
+  pointer-events:auto;
+  width:70px;
+  height:58px;
+  border-radius:18px;
+  border:1px solid rgba(0,240,255,.4);
+  background:rgba(3,12,25,.68);
   color:white;
-  font-size:9px;
+  font-size:25px;
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 15px rgba(0,220,255,.14);
 }
 
-.char.selected{
-  border-color:#00eaff;
-  box-shadow:0 0 20px rgba(0,220,255,.3);
+.control:active{
+  transform:scale(.9);
+  background:rgba(0,180,220,.3);
 }
 
-.char canvas{
-  width:48px;
-  height:55px;
-  display:block;
-  margin:auto;
+.small{
+  color:#8293a7;
+  font-size:11px;
+  margin-top:15px;
+  line-height:1.6;
 }
 
-#tip{
-  color:#7181a5;
-  font-size:10px;
-  margin-top:12px;
-  letter-spacing:1px;
+@media(max-width:500px){
+  .logo{
+    font-size:30px;
+  }
+
+  .card{
+    padding:23px;
+  }
+
+  .box{
+    min-width:75px;
+    padding:7px 9px;
+  }
+
+  .value{
+    font-size:17px;
+  }
+
+  #energyWrap{
+    width:110px;
+  }
 }
 </style>
 </head>
@@ -344,165 +286,131 @@ body{
 
 <div id="hud">
 
-  <div class="panel">
-    <div class="label">SCORE</div>
-    <div class="value" id="score">000000</div>
-  </div>
+  <div>
+    <div class="box">
+      <div class="label">SCORE</div>
+      <div class="value" id="score">0</div>
+    </div>
 
-  <div class="panel">
-    <div class="label">LEVEL</div>
-    <div class="value" id="level">01</div>
-  </div>
-
-  <div class="panel" id="energyBox">
-    <div class="label">ENERGY</div>
-    <div class="energyOuter">
-      <div id="energyBar"></div>
+    <div class="box">
+      <div class="label">LEVEL</div>
+      <div class="value" id="level">1</div>
     </div>
   </div>
 
-  <button id="pauseBtn">Ⅱ</button>
+  <div>
+    <div class="box" id="energyWrap">
+      <div class="label">ENERGY</div>
+      <div id="energy">
+        <div id="energyBar"></div>
+      </div>
+    </div>
+
+    <button id="pause">Ⅱ</button>
+  </div>
+
 </div>
 
-<div id="message">READY</div>
+<div id="message"></div>
 
 <div id="controls">
-
-  <div class="controlGroup">
-    <button class="control" id="leftBtn">‹</button>
-    <button class="control" id="rightBtn">›</button>
-  </div>
-
-  <div class="controlGroup">
-    <button class="control" id="jumpBtn">↑</button>
-  </div>
-
+  <button class="control" id="left">←</button>
+  <button class="control" id="jump">↑</button>
+  <button class="control" id="right">→</button>
 </div>
 
 <div id="screen">
 
-  <div class="card" id="homeCard">
+  <div class="card" id="home">
 
-    <div class="logo">NEON<br>ESCAPE</div>
-
-    <div class="subtitle">THE LAST SURVIVOR</div>
-
-    <div class="description">
-      Run through the futuristic city.
-      Dodge obstacles, collect energy,
-      unlock new worlds and survive as long as possible.
+    <div class="logo">
+      NEON<br>ESCAPE
     </div>
 
-    <div id="characterSelect">
+    <div class="sub">
+      THE LAST SURVIVOR
+    </div>
 
-      <button class="char selected" data-char="0">
-        <canvas width="60" height="60"></canvas>
+    <div class="world">
+      REAL-TIME 3D RUNNER
+    </div>
+
+    <div id="characterList">
+      <button class="character active" data-char="0">
         NOVA
       </button>
 
-      <button class="char" data-char="1">
-        <canvas width="60" height="60"></canvas>
+      <button class="character" data-char="1">
         BLAZE
       </button>
 
-      <button class="char" data-char="2">
-        <canvas width="60" height="60"></canvas>
+      <button class="character" data-char="2">
         CYBER
       </button>
 
-      <button class="char" data-char="3">
-        <canvas width="60" height="60"></canvas>
+      <button class="character" data-char="3">
         SHADOW
       </button>
-
     </div>
 
-    <button class="bigButton" id="startBtn">
+    <button class="mainBtn" id="start">
       START RUN
     </button>
 
-    <div class="stats">
-      <div class="stat">
-        <b id="bestHome">0</b>
-        <span>BEST SCORE</span>
-      </div>
-      <div class="stat">
-        <b>∞</b>
-        <span>RUN</span>
-      </div>
-      <div class="stat">
-        <b>4</b>
-        <span>WORLDS</span>
-      </div>
-    </div>
-
-    <div id="mission">
-      <div class="missionTitle">TODAY'S CHALLENGE</div>
-      <div id="missionText">Survive for 45 seconds</div>
-    </div>
-
-    <div id="tip">
-      SWIPE • BUTTONS • ARROW KEYS
+    <div class="small">
+      SWIPE LEFT / RIGHT TO CHANGE LANES<br>
+      SWIPE UP TO JUMP • A/D + SPACE ALSO WORK
     </div>
 
   </div>
 
   <div class="card hidden" id="pauseCard">
 
-    <div class="logo" style="font-size:40px">
+    <div class="logo" style="font-size:30px">
       PAUSED
     </div>
 
-    <div class="description">
-      The city is waiting...
+    <div class="sub">
+      RUN TEMPORARILY FROZEN
     </div>
 
-    <button class="bigButton" id="resumeBtn">
+    <button class="mainBtn" id="resume">
       RESUME
     </button>
 
-    <button class="bigButton secondary" id="pauseRestartBtn">
+    <button class="mainBtn" id="restartPause">
       RESTART
     </button>
 
-    <button class="bigButton secondary" id="pauseHomeBtn">
+    <button class="mainBtn" id="homePause">
       HOME
     </button>
 
   </div>
 
-  <div class="card hidden" id="gameOverCard">
+  <div class="card hidden" id="over">
 
-    <div class="subtitle">RUN TERMINATED</div>
-
-    <div class="logo" style="font-size:42px">
-      GAME OVER
+    <div class="logo" style="font-size:30px">
+      RUN OVER
     </div>
 
-    <div class="stats">
-
-      <div class="stat">
-        <b id="finalScore">0</b>
-        <span>SCORE</span>
-      </div>
-
-      <div class="stat">
-        <b id="finalLevel">1</b>
-        <span>LEVEL</span>
-      </div>
-
-      <div class="stat">
-        <b id="finalCoins">0</b>
-        <span>ENERGY</span>
-      </div>
-
+    <div class="sub">
+      YOU WERE CAUGHT
     </div>
 
-    <button class="bigButton" id="restartBtn">
+    <div class="world">
+      SCORE
+      <strong id="finalScore">0</strong>
+      <br><br>
+      BEST
+      <strong id="bestScore">0</strong>
+    </div>
+
+    <button class="mainBtn" id="restart">
       RUN AGAIN
     </button>
 
-    <button class="bigButton secondary" id="homeBtn">
+    <button class="mainBtn" id="home">
       HOME
     </button>
 
@@ -510,3763 +418,1125 @@ body{
 
 </div>
 
+<!-- REAL 3D ENGINE -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 <script>
+
 "use strict";
 
-/* =========================================================
-   NEON ESCAPE
-   SINGLE FILE PREMIUM RUNNER
-   ========================================================= */
+/* =====================================================
+   BASIC SETUP
+===================================================== */
 
-const canvas = document.getElementById("game");
-const ctx = canvas.getContext("2d");
+const canvas =
+  document.getElementById("game");
 
-let W = 0;
-let H = 0;
-let DPR = 1;
-
-function resize(){
-
-  DPR = Math.min(window.devicePixelRatio || 1,2);
-
-  W = window.innerWidth;
-  H = window.innerHeight;
-
-  canvas.width = W * DPR;
-  canvas.height = H * DPR;
-
-  canvas.style.width = W + "px";
-  canvas.style.height = H + "px";
-
-  ctx.setTransform(DPR,0,0,DPR,0,0);
-}
-
-window.addEventListener("resize",resize);
-resize();
-
-/* =========================================================
-   GAME STATE
-   ========================================================= */
-
-let running = false;
-let paused = false;
-
-let score = 0;
-let level = 1;
-let energy = 100;
-let collected = 0;
-
-let best = Number(localStorage.getItem("neonEscapeBest") || 0);
-
-let gameTime = 0;
-let lastTime = performance.now();
-
-let roadScroll = 0;
-let world = 0;
-
-let obstacleTimer = 0;
-let orbTimer = 0;
-let signTimer = 0;
-
-let shake = 0;
-let flash = 0;
-
-let selectedCharacter = 0;
-
-const characters = [
-  {
-    name:"NOVA",
-    shirt:"#10dfff",
-    pants:"#15264c",
-    hair:"#111827",
-    skin:"#f1b28a"
-  },
-  {
-    name:"BLAZE",
-    shirt:"#ff477e",
-    pants:"#261638",
-    hair:"#ffb22e",
-    skin:"#c98262"
-  },
-  {
-    name:"CYBER",
-    shirt:"#8c55ff",
-    pants:"#121b3d",
-    hair:"#65ffed",
-    skin:"#e1a47f"
-  },
-  {
-    name:"SHADOW",
-    shirt:"#d5e3ff",
-    pants:"#111116",
-    hair:"#050505",
-    skin:"#9b684e"
-  }
-];
-
-/* =========================================================
-   PLAYER
-   ========================================================= */
-
-const player = {
-
-  lane:1,
-  targetLane:1,
-
-  y:0,
-  vy:0,
-
-  jump:false,
-
-  slide:false,
-
-  anim:0,
-
-  shield:0,
-
-  magnet:0,
-
-  boost:0
-};
-
-/* =========================================================
-   OBJECT ARRAYS
-   ========================================================= */
-
-const obstacles = [];
-const orbs = [];
-const particles = [];
-const buildings = [];
-const signs = [];
-const stars = [];
-
-/* =========================================================
-   RANDOM
-   ========================================================= */
-
-function rand(a,b){
-  return Math.random()*(b-a)+a;
-}
-
-function randi(a,b){
-  return Math.floor(rand(a,b+1));
-}
-
-/* =========================================================
-   STARS
-   ========================================================= */
-
-for(let i=0;i<130;i++){
-
-  stars.push({
-    x:Math.random(),
-    y:Math.random(),
-    z:Math.random(),
-    size:rand(.5,2.4),
-    speed:rand(.2,1)
+const renderer =
+  new THREE.WebGLRenderer({
+    canvas:canvas,
+    antialias:true,
+    powerPreference:"high-performance"
   });
-}
 
-/* =========================================================
-   BUILDINGS
-   ========================================================= */
+renderer.setPixelRatio(
+  Math.min(window.devicePixelRatio,2)
+);
 
-function createBuildings(){
+renderer.setSize(
+  innerWidth,
+  innerHeight
+);
 
-  buildings.length = 0;
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=
+  THREE.PCFSoftShadowMap;
 
-  for(let i=0;i<45;i++){
+renderer.outputColorSpace=
+  THREE.SRGBColorSpace;
 
-    buildings.push({
+const scene =
+  new THREE.Scene();
 
-      side:Math.random()<.5 ? -1 : 1,
+scene.fog =
+  new THREE.FogExp2(
+    0x02050d,
+    .018
+  );
 
-      x:rand(.05,.95),
+const camera =
+  new THREE.PerspectiveCamera(
+    62,
+    innerWidth/innerHeight,
+    .1,
+    500
+  );
 
-      z:rand(.05,1),
+camera.position.set(
+  0,
+  5,
+  10
+);
 
-      width:rand(35,95),
 
-      height:rand(80,280),
+/* =====================================================
+   LIGHTING
+===================================================== */
 
-      windows:randi(3,8),
+const ambient =
+  new THREE.AmbientLight(
+    0x7899aa,
+    1.4
+  );
 
-      seed:Math.random()
+scene.add(ambient);
 
-    });
-  }
-}
+const moon =
+  new THREE.DirectionalLight(
+    0x8edcff,
+    2.5
+  );
 
-createBuildings();
+moon.position.set(
+  -20,
+  35,
+  15
+);
 
-/* =========================================================
-   WORLD DATA
-   ========================================================= */
+moon.castShadow=true;
 
-const worlds = [
+moon.shadow.mapSize.width=1024;
+moon.shadow.mapSize.height=1024;
 
-  {
-    name:"NEON CITY",
-    sky1:"#07051d",
-    sky2:"#29115c",
-    ground:"#070b18",
-    road:"#11152c",
-    glow:"#00eaff",
-    accent:"#9a36ff"
-  },
+scene.add(moon);
 
-  {
-    name:"NIGHT HIGHWAY",
-    sky1:"#020814",
-    sky2:"#102f48",
-    ground:"#061016",
-    road:"#0d1720",
-    glow:"#45f6ff",
-    accent:"#1d83ff"
-  },
-
-  {
-    name:"DESERT RUN",
-    sky1:"#180a16",
-    sky2:"#76331f",
-    ground:"#321915",
-    road:"#201a1c",
-    glow:"#ffcf4b",
-    accent:"#ff5a36"
-  },
-
-  {
-    name:"CYBER DISTRICT",
-    sky1:"#08020f",
-    sky2:"#451052",
-    ground:"#100817",
-    road:"#161027",
-    glow:"#ff45ed",
-    accent:"#7c43ff"
-  }
-];
-
-/* =========================================================
-   CURRENT WORLD
-   ========================================================= */
-
-function currentWorld(){
-
-  return worlds[world % worlds.length];
-}
-
-/* =========================================================
-   START GAME
-   ========================================================= */
-
-function startGame(){
-
-  running = true;
-  paused = false;
-
-  score = 0;
-  level = 1;
-  energy = 100;
-  collected = 0;
-
-  gameTime = 0;
-  roadScroll = 0;
-
-  obstacleTimer = 900;
-  orbTimer = 500;
-
-  player.lane = 1;
-  player.targetLane = 1;
-  player.y = 0;
-  player.vy = 0;
-  player.jump = false;
-  player.slide = false;
-  player.shield = 0;
-  player.magnet = 0;
-  player.boost = 0;
-
-  obstacles.length = 0;
-  orbs.length = 0;
-  particles.length = 0;
-  signs.length = 0;
-
-  hideAllCards();
-
-  showMessage("RUN!");
-
-  lastTime = performance.now();
-
-  requestAnimationFrame(loop);
-}
-
-/* =========================================================
-   PAUSE
-   ========================================================= */
-
-function pauseGame(){
-
-  if(!running) return;
-
-  paused = true;
-
-  document.getElementById("pauseCard")
-    .classList.remove("hidden");
-
-}
-
-/* =========================================================
-   RESUME
-   ========================================================= */
-
-function resumeGame(){
-
-  if(!running) return;
-
-  paused = false;
-
-  document.getElementById("pauseCard")
-    .classList.add("hidden");
-
-  lastTime = performance.now();
-
-  requestAnimationFrame(loop);
-}
-
-/* =========================================================
-   GAME OVER
-   ========================================================= */
-
-function gameOver(){
-
-  if(!running) return;
-
-  running = false;
-
-  if(score > best){
-
-    best = score;
-
-    localStorage.setItem(
-      "neonEscapeBest",
-      best
-    );
-  }
-
-  document.getElementById("finalScore")
-    .textContent = Math.floor(score);
-
-  document.getElementById("finalLevel")
-    .textContent = level;
-
-  document.getElementById("finalCoins")
-    .textContent = collected;
-
-  document.getElementById("gameOverCard")
-    .classList.remove("hidden");
-
-  burst(
-    W/2,
-    H*.52,
+const cyanLight =
+  new THREE.PointLight(
+    0x00eaff,
+    18,
     45
   );
-}
 
-/* =========================================================
-   HIDE CARDS
-   ========================================================= */
+cyanLight.position.set(
+  0,
+  7,
+  5
+);
 
-function hideAllCards(){
+scene.add(cyanLight);
 
-  document.getElementById("screen")
-    .classList.add("hidden");
 
-  document.getElementById("homeCard")
-    .classList.add("hidden");
+/* =====================================================
+   WORLD
+===================================================== */
 
-  document.getElementById("pauseCard")
-    .classList.add("hidden");
+const worldGroup =
+  new THREE.Group();
 
-  document.getElementById("gameOverCard")
-    .classList.add("hidden");
-}
+scene.add(worldGroup);
 
-/* =========================================================
-   HOME
-   ========================================================= */
+const roadGroup =
+  new THREE.Group();
 
-function goHome(){
+scene.add(roadGroup);
 
-  running = false;
-  paused = false;
+const obstacleGroup =
+  new THREE.Group();
 
-  document.getElementById("screen")
-    .classList.remove("hidden");
+scene.add(obstacleGroup);
 
-  document.getElementById("homeCard")
-    .classList.remove("hidden");
+const orbGroup =
+  new THREE.Group();
 
-  document.getElementById("pauseCard")
-    .classList.add("hidden");
+scene.add(orbGroup);
 
-  document.getElementById("gameOverCard")
-    .classList.add("hidden");
+const buildingGroup =
+  new THREE.Group();
 
-  document.getElementById("bestHome")
-    .textContent = best;
-}
+scene.add(buildingGroup);
 
-/* =========================================================
-   MESSAGE
-   ========================================================= */
 
-let messageTimeout;
+/* =====================================================
+   MATERIAL HELPERS
+===================================================== */
 
-function showMessage(text){
+function mat(
+  color,
+  emissive=0x000000,
+  intensity=0
+){
 
-  const el = document.getElementById("message");
+  return new THREE.MeshStandardMaterial({
 
-  el.textContent = text;
-  el.style.opacity = "1";
+    color:color,
 
-  clearTimeout(messageTimeout);
+    emissive:emissive,
 
-  messageTimeout = setTimeout(()=>{
+    emissiveIntensity:intensity,
 
-    el.style.opacity = "0";
+    roughness:.55,
 
-  },900);
-}
+    metalness:.35
 
-/* =========================================================
-   LANE POSITION
-   ========================================================= */
-
-function laneX(lane){
-
-  const roadCenter = W*.5;
-
-  const spread =
-    Math.min(W*.34,260);
-
-  return roadCenter +
-    (lane-1)*spread;
-}
-
-/* =========================================================
-   ROAD DEPTH
-   ========================================================= */
-
-function depthY(z){
-
-  const horizon = H*.40;
-
-  const bottom = H*1.08;
-
-  return horizon +
-    Math.pow(z,1.8) *
-    (bottom-horizon);
-}
-
-/* =========================================================
-   DEPTH SCALE
-   ========================================================= */
-
-function depthScale(z){
-
-  return .15 +
-    Math.pow(z,1.8)*1.15;
-}
-
-/* =========================================================
-   SPAWN OBSTACLE
-   ========================================================= */
-
-function spawnObstacle(){
-
-  const typeRoll = Math.random();
-
-  let type = "barrier";
-
-  if(typeRoll < .28) type = "car";
-  else if(typeRoll < .52) type = "barrier";
-  else if(typeRoll < .70) type = "crate";
-  else if(typeRoll < .86) type = "laser";
-  else type = "truck";
-
-  obstacles.push({
-
-    lane:randi(0,2),
-
-    z:0,
-
-    type:type,
-
-    speed:rand(.00042,.00062)
   });
 }
 
-/* =========================================================
-   SPAWN ORB
-   ========================================================= */
 
-function spawnOrb(){
+/* =====================================================
+   ROAD
+===================================================== */
 
-  orbs.push({
-
-    lane:randi(0,2),
-
-    z:0,
-
-    spin:rand(0,Math.PI*2),
-
-    value:1
-  });
-}
-
-/* =========================================================
-   SPAWN SIGN
-   ========================================================= */
-
-function spawnSign(){
-
-  const texts = [
-    "NEON CITY",
-    "RUN FASTER",
-    "DANGER",
-    "SECTOR 07",
-    "KEEP RUNNING",
-    "NIGHT ZONE",
-    "NO LIMITS",
-    "ESCAPE"
-  ];
-
-  signs.push({
-
-    side:Math.random()<.5?-1:1,
-
-    z:0,
-
-    text:texts[
-      randi(0,texts.length-1)
-    ]
-  });
-}
-
-/* =========================================================
-   UPDATE
-   ========================================================= */
-
-function update(dt){
-
-  gameTime += dt;
-
-  const speedMultiplier =
-    player.boost > 0 ? 1.7 : 1;
-
-  roadScroll +=
-    dt * (.00045 + level*.000035) *
-    speedMultiplier;
-
-  player.anim += dt*.012;
-
-  /* LEVEL */
-
-  level =
-    1 +
-    Math.floor(gameTime/18000);
-
-  world =
-    Math.floor(gameTime/24000);
-
-  /* SCORE */
-
-  score +=
-    dt*.018*
-    level*
-    speedMultiplier;
-
-  /* ENERGY */
-
-  energy -=
-    dt*.00075;
-
-  if(energy <= 0){
-
-    energy = 0;
-
-    gameOver();
-
-    return;
-  }
-
-  /* POWER TIMER */
-
-  if(player.shield > 0)
-    player.shield -= dt;
-
-  if(player.magnet > 0)
-    player.magnet -= dt;
-
-  if(player.boost > 0)
-    player.boost -= dt;
-
-  /* JUMP PHYSICS */
-
-  if(player.jump){
-
-    player.vy -=
-      dt*.00225;
-
-    player.y +=
-      player.vy*dt;
-
-    if(player.y <= 0){
-
-      player.y = 0;
-      player.vy = 0;
-      player.jump = false;
-    }
-  }
-
-  /* LANE SMOOTHING */
-
-  player.lane +=
-    (player.targetLane-player.lane)
-    * Math.min(1,dt*.012);
-
-  /* SPAWN */
-
-  obstacleTimer -= dt;
-
-  if(obstacleTimer <= 0){
-
-    spawnObstacle();
-
-    obstacleTimer =
-      Math.max(
-        520,
-        1150-level*65
-      );
-  }
-
-  orbTimer -= dt;
-
-  if(orbTimer <= 0){
-
-    spawnOrb();
-
-    orbTimer =
-      rand(550,950);
-  }
-
-  signTimer -= dt;
-
-  if(signTimer <= 0){
-
-    spawnSign();
-
-    signTimer =
-      rand(1000,1900);
-  }
-
-  /* OBJECTS */
-
-  for(let i=obstacles.length-1;i>=0;i--){
-
-    const o = obstacles[i];
-
-    o.z +=
-      o.speed*dt*
-      (1+level*.06)*
-      speedMultiplier;
-
-    if(o.z > 1.12){
-
-      obstacles.splice(i,1);
-
-      continue;
-    }
-
-    checkObstacle(o);
-  }
-
-  /* =========================
-     UPDATE ENERGY ORBS
-     ========================= */
-
-  for(let i=orbs.length-1;i>=0;i--){
-
-    const o = orbs[i];
-
-    o.z +=
-      .00055 *
-      dt *
-      (1+level*.05);
-
-    o.spin +=
-      dt*.006;
-
-    /* MAGNET POWER */
-
-    if(
-      player.magnet > 0 &&
-      Math.abs(o.z-.82)<.28
-    ){
-
-      o.lane +=
-        (player.lane-o.lane)*.08;
-    }
-
-    /* COLLECT */
-
-    if(
-      Math.abs(o.z-.83)<.075 &&
-      Math.abs(o.lane-player.lane)<.34
-    ){
-
-      collectOrb(o);
-
-      orbs.splice(i,1);
-
-      continue;
-    }
-
-    /* REMOVE */
-
-    if(o.z > 1.1){
-
-      orbs.splice(i,1);
-    }
-  }
-
-  /* =========================
-     UPDATE SIGNS
-     ========================= */
-
-  for(
-    let i=signs.length-1;
-    i>=0;
-    i--
-  ){
-
-    signs[i].z +=
-      .00045*dt;
-
-    if(
-      signs[i].z > 1.1
-    ){
-
-      signs.splice(i,1);
-    }
-  }
-
-  /* =========================
-     UPDATE PARTICLES
-     ========================= */
-
-  for(
-    let i=particles.length-1;
-    i>=0;
-    i--
-  ){
-
-    const p =
-      particles[i];
-
-    p.x +=
-      p.vx*dt;
-
-    p.y +=
-      p.vy*dt;
-
-    p.vy +=
-      .0004*dt;
-
-    p.life -= dt;
-
-    if(
-      p.life <= 0
-    ){
-
-      particles.splice(i,1);
-    }
-  }
-
-  /* =========================
-     SCREEN EFFECTS
-     ========================= */
-
-  shake *= .90;
-
-  flash *= .90;
-
-  /* =========================
-     RUNNER TRAIL
-     ========================= */
-
-  if(
-    Math.random() < .65
-  ){
-
-    const px =
-      laneX(player.lane);
-
-    const py =
-      H*.82 -
-      player.y*H*.28;
-
-    particles.push({
-
-      x:px+
-        rand(-8,8),
-
-      y:py+
-        rand(10,25),
-
-      vx:rand(-.03,.03),
-
-      vy:rand(.01,.05),
-
-      life:rand(200,500),
-
-      maxLife:500,
-
-      size:rand(2,5),
-
-      type:"trail"
-    });
-  }
-
-  updateHUD();
-}
-
-
-/* =========================================================
-   OBSTACLE COLLISION
-   ========================================================= */
-
-function checkObstacle(o){
-
-  if(o.hit)
-    return;
-
-  if(
-    Math.abs(o.z-.83)<.065 &&
-    Math.abs(o.lane-player.lane)<.34
-  ){
-
-    /* JUMP OVER NORMAL OBSTACLES */
-
-    const jumpingHigh =
-      player.y > .55;
-
-    if(
-      o.type === "laser" &&
-      jumpingHigh
-    ){
-
-      return;
-    }
-
-    if(
-      jumpingHigh &&
-      (
-        o.type === "barrier" ||
-        o.type === "car" ||
-        o.type === "crate" ||
-        o.type === "truck"
-      )
-    ){
-
-      return;
-    }
-
-    o.hit = true;
-
-    /* SHIELD */
-
-    if(
-      player.shield > 0
-    ){
-
-      player.shield = 0;
-
-      shake = 12;
-
-      burst(
-        laneX(player.lane),
-        H*.76,
-        22
-      );
-
-      showMessage(
-        "SHIELD SAVED YOU!"
-      );
-
-      return;
-    }
-
-    /* DAMAGE */
-
-    energy -= 25;
-
-    shake = 18;
-
-    flash = .4;
-
-    burst(
-      laneX(player.lane),
-      H*.74,
-      30
-    );
-
-    showMessage(
-      "-25 ENERGY"
-    );
-
-    if(
-      energy <= 0
-    ){
-
-      energy = 0;
-
-      gameOver();
-    }
-  }
-}
-
-
-/* =========================================================
-   COLLECT ENERGY ORB
-   ========================================================= */
-
-function collectOrb(){
-
-  collected++;
-
-  score += 35;
-
-  energy =
-    Math.min(
-      100,
-      energy+4
-    );
-
-  burst(
-    laneX(player.lane),
-    H*.75,
-    12
+const roadMat =
+  mat(
+    0x11151d
   );
 
-  /* EVERY 10 ORBS = SHIELD */
+const road =
+  new THREE.Mesh(
 
-  if(
-    collected % 10 === 0
-  ){
+    new THREE.BoxGeometry(
+      11,
+      .35,
+      500
+    ),
 
-    player.shield =
-      5000;
+    roadMat
 
-    showMessage(
-      "SHIELD READY!"
-    );
-  }
-}
+  );
+
+road.position.set(
+  0,
+  -.3,
+  -200
+);
+
+road.receiveShadow=true;
+
+roadGroup.add(road);
 
 
-/* =========================================================
-   PARTICLE BURST
-   ========================================================= */
+/* SIDE FLOOR */
 
-function burst(
-  x,
-  y,
-  count
+const sideMat =
+  mat(
+    0x050911
+  );
+
+const side =
+  new THREE.Mesh(
+
+    new THREE.BoxGeometry(
+      80,
+      .25,
+      500
+    ),
+
+    sideMat
+
+  );
+
+side.position.set(
+  0,
+  -.48,
+  -200
+);
+
+roadGroup.add(side);
+
+
+/* =====================================================
+   LANE MARKERS
+===================================================== */
+
+const markerMat =
+  mat(
+    0x00eaff,
+    0x00eaff,
+    4
+  );
+
+for(
+  let z=0;
+  z>-480;
+  z-=9
 ){
 
   for(
-    let i=0;
-    i<count;
-    i++
+    const x of [-1.8,1.8]
   ){
 
-    const angle =
-      Math.random()*
-      Math.PI*2;
+    const marker =
+      new THREE.Mesh(
 
-    const speed =
-      rand(.03,.16);
+        new THREE.BoxGeometry(
+          .09,
+          .025,
+          4.5
+        ),
 
-    particles.push({
+        markerMat
 
-      x:x,
+      );
 
-      y:y,
+    marker.position.set(
+      x,
+      -.08,
+      z
+    );
 
-      vx:
-        Math.cos(angle)*
-        speed,
-
-      vy:
-        Math.sin(angle)*
-        speed,
-
-      life:
-        rand(300,900),
-
-      maxLife:900,
-
-      size:
-        rand(2,7),
-
-      type:"burst"
-    });
+    roadGroup.add(marker);
   }
 }
 
 
-/* =========================================================
-   MAIN DRAW
-   ========================================================= */
+/* =====================================================
+   ROAD SIDE LIGHTS
+===================================================== */
 
-function draw(){
+function createStreetLight(x,z){
 
-  ctx.save();
+  const g =
+    new THREE.Group();
 
-  /* CAMERA SHAKE */
+  const pole =
+    new THREE.Mesh(
 
-  if(
-    shake > 1
-  ){
+      new THREE.CylinderGeometry(
+        .055,
+        .07,
+        4.5,
+        8
+      ),
 
-    ctx.translate(
-      rand(-shake,shake),
-      rand(-shake,shake)
+      mat(0x263746)
     );
-  }
 
-  drawSky();
+  pole.position.y=2.1;
 
-  drawStars();
+  g.add(pole);
 
-  drawCity();
+  const lamp =
+    new THREE.Mesh(
 
-  drawRoad();
+      new THREE.SphereGeometry(
+        .18,
+        10,
+        10
+      ),
 
-  drawSigns();
-
-  drawOrbs();
-
-  drawObstacles();
-
-  drawPlayer();
-
-  drawParticles();
-
-  /* DAMAGE FLASH */
-
-  if(
-    flash > 0
-  ){
-
-    ctx.fillStyle =
-      `rgba(255,80,130,${flash*.25})`;
-
-    ctx.fillRect(
-      0,
-      0,
-      W,
-      H
+      mat(
+        0x00ffff,
+        0x00ffff,
+        8
+      )
     );
-  }
 
-  ctx.restore();
+  lamp.position.set(
+    0,
+    4.35,
+    0
+  );
+
+  g.add(lamp);
+
+  const light =
+    new THREE.PointLight(
+      0x00eaff,
+      7,
+      12
+    );
+
+  light.position.copy(
+    lamp.position
+  );
+
+  g.add(light);
+
+  g.position.set(
+    x,
+    0,
+    z
+  );
+
+  return g;
+}
+
+for(
+  let z=0;
+  z>-480;
+  z-=18
+){
+
+  roadGroup.add(
+    createStreetLight(-6,z)
+  );
+
+  roadGroup.add(
+    createStreetLight(6,z-9)
+  );
 }
 
 
-/* =========================================================
-   SKY
-   ========================================================= */
+/* =====================================================
+   BUILDINGS
+===================================================== */
 
-function drawSky(){
+function createBuilding(
+  x,
+  z,
+  w,
+  h,
+  d
+){
 
-  const w =
-    currentWorld();
+  const group =
+    new THREE.Group();
 
-  const gradient =
-    ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      H
+  const building =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        w,h,d
+      ),
+
+      mat(
+        0x08101c,
+        0x001a25,
+        .5
+      )
+
     );
 
-  gradient.addColorStop(
-    0,
-    w.sky1
-  );
+  building.position.y=
+    h/2-.4;
 
-  gradient.addColorStop(
-    .55,
-    w.sky2
-  );
+  building.castShadow=true;
 
-  gradient.addColorStop(
-    1,
-    w.ground
-  );
+  group.add(building);
 
-  ctx.fillStyle =
-    gradient;
 
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
+  const windowMat =
+    mat(
+      Math.random()>.5
+      ?0x00eaff
+      :0x9b45ff,
 
-  /* MOON / NEON SUN */
-
-  const moonX =
-    W*.76;
-
-  const moonY =
-    H*.20;
-
-  const moonR =
-    Math.min(W,H)*.08;
-
-  const glow =
-    ctx.createRadialGradient(
-      moonX,
-      moonY,
-      0,
-      moonX,
-      moonY,
-      moonR*2.2
+      0x00eaff,
+      2
     );
 
-  glow.addColorStop(
-    0,
-    "rgba(180,120,255,.45)"
-  );
-
-  glow.addColorStop(
-    .3,
-    "rgba(80,120,255,.12)"
-  );
-
-  glow.addColorStop(
-    1,
-    "rgba(0,0,0,0)"
-  );
-
-  ctx.fillStyle =
-    glow;
-
-  ctx.fillRect(
-    moonX-moonR*2.2,
-    moonY-moonR*2.2,
-    moonR*4.4,
-    moonR*4.4
-  );
-
-  ctx.beginPath();
-
-  ctx.arc(
-    moonX,
-    moonY,
-    moonR*.55,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fillStyle =
-    "rgba(220,225,255,.75)";
-
-  ctx.fill();
-}
-
-
-/* =========================================================
-   STARS
-   ========================================================= */
-
-function drawStars(){
 
   for(
-    const s of stars
+    let yy=3;
+    yy<h-1;
+    yy+=3.2
   ){
-
-    const x =
-      s.x*W;
-
-    const y =
-      (
-        (
-          s.y+
-          roadScroll*
-          s.speed*.2
-        )%1
-      )*
-      H*.45;
-
-    const alpha =
-      .15+
-      s.z*.55;
-
-    ctx.globalAlpha =
-      alpha;
-
-    ctx.fillStyle =
-      "#b9eaff";
-
-    ctx.fillRect(
-      x,
-      y,
-      s.size,
-      s.size
-    );
-  }
-
-  ctx.globalAlpha = 1;
-}
-
-
-/* =========================================================
-   FUTURISTIC CITY
-   ========================================================= */
-
-function drawCity(){
-
-  const horizon =
-    H*.41;
-
-  for(
-    const b of buildings
-  ){
-
-    const z =
-      (
-        b.z+
-        roadScroll*.13
-      )%1;
-
-    const scale =
-      .25+
-      z*1.1;
-
-    const height =
-      b.height*scale;
-
-    const width =
-      b.width*scale;
-
-    const sideX =
-      b.side < 0
-      ?
-      W*.5-W*.15-width
-      :
-      W*.5+W*.15;
-
-    const x =
-      sideX+
-      b.x*
-      (
-        b.side<0
-        ? W*.1
-        : W*.1
-      );
-
-    const y =
-      horizon-height;
-
-    /* BUILDING */
-
-    ctx.fillStyle =
-      "rgba(8,12,30,.9)";
-
-    ctx.fillRect(
-      x,
-      y,
-      width,
-      height
-    );
-
-    /* ROOFLIGHT */
-
-    ctx.fillStyle =
-      currentWorld().accent;
-
-    ctx.globalAlpha =
-      .12;
-
-    ctx.fillRect(
-      x,
-      y,
-      width,
-      3
-    );
-
-    ctx.globalAlpha = 1;
-
-    /* WINDOWS */
-
-    const rows =
-      Math.max(
-        2,
-        Math.floor(height/25)
-      );
-
-    const cols =
-      Math.max(
-        1,
-        Math.floor(width/20)
-      );
 
     for(
-      let row=0;
-      row<rows;
-      row++
+      let xx=-w/2+1.2;
+      xx<w/2-1;
+      xx+=2
     ){
 
-      for(
-        let col=0;
-        col<cols;
-        col++
-      ){
+      if(Math.random()<.52){
 
-        if(
-          Math.random()>.72
-        )
-          continue;
+        const win =
+          new THREE.Mesh(
 
-        const wx =
-          x+7+
-          col*20;
+            new THREE.BoxGeometry(
+              .65,
+              .85,
+              .04
+            ),
 
-        const wy =
-          y+10+
-          row*25;
+            windowMat
 
-        if(
-          wx+5 < x+width &&
-          wy+7 < y+height
-        ){
-
-          ctx.globalAlpha =
-            .25+
-            z*.5;
-
-          ctx.fillStyle =
-            row%3===0
-            ?
-            currentWorld().glow
-            :
-            "#b65cff";
-
-          ctx.fillRect(
-            wx,
-            wy,
-            5,
-            8
           );
-        }
+
+        win.position.set(
+          xx,
+          yy,
+          d/2+.025
+        );
+
+        group.add(win);
       }
     }
-
-    ctx.globalAlpha = 1;
   }
-}
 
-
-/* =========================================================
-   PREMIUM 3D ROAD
-   ========================================================= */
-
-function drawRoad(){
-
-  const horizon =
-    H*.405;
-
-  const bottom =
-    H*1.12;
-
-  /* GROUND */
-
-  ctx.fillStyle =
-    currentWorld().ground;
-
-  ctx.fillRect(
+  group.position.set(
+    x,
     0,
-    horizon,
-    W,
-    H-horizon
+    z
   );
 
-  /* ROAD */
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    W*.43,
-    horizon
-  );
-
-  ctx.lineTo(
-    W*.57,
-    horizon
-  );
-
-  ctx.lineTo(
-    W*.92,
-    bottom
-  );
-
-  ctx.lineTo(
-    W*.08,
-    bottom
-  );
-
-  ctx.closePath();
-
-  ctx.fillStyle =
-    currentWorld().road;
-
-  ctx.fill();
-
-  /* ROAD EDGES */
-
-  ctx.strokeStyle =
-    currentWorld().glow;
-
-  ctx.lineWidth = 3;
-
-  ctx.shadowBlur = 18;
-
-  ctx.shadowColor =
-    currentWorld().glow;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    W*.43,
-    horizon
-  );
-
-  ctx.lineTo(
-    W*.08,
-    bottom
-  );
-
-  ctx.stroke();
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    W*.57,
-    horizon
-  );
-
-  ctx.lineTo(
-    W*.92,
-    bottom
-  );
-
-  ctx.stroke();
-
-  ctx.shadowBlur = 0;
-
-  /* LANE MARKINGS */
-
-  for(
-    let laneLine=1;
-    laneLine<=2;
-    laneLine++
-  ){
-
-    const topX =
-      W*.43+
-      laneLine*.14;
-
-    const bottomX =
-      W*.08+
-      laneLine*
-      (W*.84/3);
-
-    for(
-      let i=0;
-      i<18;
-      i++
-    ){
-
-      const z =
-        (
-          i/18+
-          roadScroll*2
-        )%1;
-
-      const y =
-        horizon+
-        Math.pow(z,1.8)*
-        (bottom-horizon);
-
-      const x =
-        topX+
-        (bottomX-topX)*
-        Math.pow(z,1.8);
-
-      const length =
-        5+
-        z*65;
-
-      const width =
-        2+
-        z*5;
-
-      ctx.globalAlpha =
-        .25+
-        z*.75;
-
-      ctx.fillStyle =
-        "#b9f8ff";
-
-      ctx.fillRect(
-        x-width/2,
-        y,
-        width,
-        length
-      );
-    }
-  }
-
-  ctx.globalAlpha=1;
-
-  /* ROAD GRID */
-
-  for(
-    let i=0;
-    i<14;
-    i++
-  ){
-
-    const z =
-      (
-        i/14+
-        roadScroll*.8
-      )%1;
-
-    const y =
-      horizon+
-      Math.pow(z,1.8)*
-      (bottom-horizon);
-
-    const left =
-      W*.43+
-      (W*.08-W*.43)*
-      Math.pow(z,1.8);
-
-    const right =
-      W*.57+
-      (W*.92-W*.57)*
-      Math.pow(z,1.8);
-
-    ctx.globalAlpha =
-      .12+
-      z*.2;
-
-    ctx.strokeStyle =
-      currentWorld().accent;
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      left,
-      y
-    );
-
-    ctx.lineTo(
-      right,
-      y
-    );
-
-    ctx.stroke();
-  }
-
-  ctx.globalAlpha=1;
-
-  /* SIDE LIGHTS */
-
-  for(
-    let i=0;
-    i<16;
-    i++
-  ){
-
-    const z =
-      (
-        i/16+
-        roadScroll
-      )%1;
-
-    const y =
-      horizon+
-      Math.pow(z,1.8)*
-      (bottom-horizon);
-
-    const leftX =
-      W*.43+
-      (W*.08-W*.43)*
-      Math.pow(z,1.8);
-
-    const rightX =
-      W*.57+
-      (W*.92-W*.57)*
-      Math.pow(z,1.8);
-
-    const size =
-      2+
-      z*7;
-
-    ctx.fillStyle =
-      currentWorld().glow;
-
-    ctx.shadowBlur =
-      15*z;
-
-    ctx.shadowColor =
-      currentWorld().glow;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      leftX,
-      y,
-      size,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.beginPath();
-
-    ctx.arc(
-      rightX,
-      y,
-      size,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-  }
-
-  ctx.shadowBlur=0;
+  return group;
 }
 
 
-/* =========================================================
-   NEON BOARDS
-   ========================================================= */
-
-function drawSigns(){
-
-  for(
-    const s of signs
-  ){
-
-    const z =
-      s.z;
-
-    const y =
-      H*.36+
-      Math.pow(z,1.7)*
-      H*.42;
-
-    const scale =
-      .15+
-      z;
-
-    const x =
-      s.side<0
-      ?
-      W*.18-z*W*.08
-      :
-      W*.82+z*W*.08;
-
-    ctx.save();
-
-    ctx.translate(
-      x,
-      y
-    );
-
-    ctx.scale(
-      scale,
-      scale
-    );
-
-    ctx.shadowBlur=20;
-
-    ctx.shadowColor =
-      currentWorld().glow;
-
-    ctx.fillStyle =
-      "rgba(5,8,25,.8)";
-
-    ctx.strokeStyle =
-      currentWorld().glow;
-
-    ctx.lineWidth=2;
-
-    ctx.fillRect(
-      -55,
-      -18,
-      110,
-      36
-    );
-
-    ctx.strokeRect(
-      -55,
-      -18,
-      110,
-      36
-    );
-
-    ctx.shadowBlur=0;
-
-    ctx.fillStyle="#fff";
-
-    ctx.font =
-      "bold 11px Arial";
-
-    ctx.textAlign =
-      "center";
-
-    ctx.fillText(
-      s.text,
-      0,
-      4
-    );
-
-    ctx.restore();
-  }
-}
-
-
-/* =========================================================
-   ENERGY ORBS
-   ========================================================= */
-
-function drawOrbs(){
-
-  for(
-    const o of orbs
-  ){
-
-    const z =
-      o.z;
-
-    const x =
-      laneX(o.lane);
-
-    const y =
-      depthY(z)-20*z;
-
-    const r =
-      7+z*14;
-
-    ctx.save();
-
-    ctx.translate(
-      x,
-      y
-    );
-
-    ctx.rotate(
-      o.spin
-    );
-
-    ctx.shadowBlur=25;
-
-    ctx.shadowColor =
-      "#ffe45a";
-
-    ctx.strokeStyle =
-      "#ffe45a";
-
-    ctx.lineWidth =
-      Math.max(
-        1,
-        2*z
-      );
-
-    ctx.beginPath();
-
-    ctx.arc(
-      0,
-      0,
-      r,
-      0,
-      Math.PI*2
-    );
-
-    ctx.stroke();
-
-    ctx.fillStyle =
-      "rgba(255,226,80,.7)";
-
-    ctx.beginPath();
-
-    ctx.moveTo(
-      0,
-      -r*.7
-    );
-
-    ctx.lineTo(
-      r*.7,
-      0
-    );
-
-    ctx.lineTo(
-      0,
-      r*.7
-    );
-
-    ctx.lineTo(
-      -r*.7,
-      0
-    );
-
-    ctx.closePath();
-
-    ctx.fill();
-
-    ctx.restore();
-  }
-}
-
-
-/* =========================================================
-   OBSTACLES
-   ========================================================= */
-
-function drawObstacles(){
-
-  for(
-    const o of obstacles
-  ){
-
-    const z =
-      o.z;
-
-    const x =
-      laneX(o.lane);
-
-    const y =
-      depthY(z);
-
-    const scale =
-      depthScale(z);
-
-    ctx.save();
-
-    ctx.translate(
-      x,
-      y
-    );
-
-    ctx.scale(
-      scale,
-      scale
-    );
-
-    if(
-      o.type==="car"
-    ){
-
-      drawCar();
-
-    }
-    else if(
-      o.type==="truck"
-    ){
-
-      drawTruck();
-
-    }
-    else if(
-      o.type==="crate"
-    ){
-
-      drawCrate();
-
-    }
-    else if(
-      o.type==="laser"
-    ){
-
-      drawLaser();
-
-    }
-    else{
-
-      drawBarrier();
-    }
-
-    ctx.restore();
-  }
-}
-
-
-/* =========================================================
-   CAR
-   ========================================================= */
-
-function drawCar(){
-
-  ctx.shadowBlur=18;
-
-  ctx.shadowColor =
-    "#ff315f";
-
-  ctx.fillStyle =
-    "#14182b";
-
-  roundRect(
-    -30,
-    -45,
-    60,
-    55,
-    12
-  );
-
-  ctx.fill();
-
-  ctx.shadowBlur=0;
-
-  ctx.fillStyle =
-    "#242d4b";
-
-  roundRect(
-    -22,
-    -38,
-    44,
-    20,
-    7
-  );
-
-  ctx.fill();
-
-  ctx.fillStyle =
-    "#77edff";
-
-  ctx.fillRect(
-    -18,
-    -34,
-    36,
-    11
-  );
-
-  ctx.fillStyle =
-    "#ff2b5f";
-
-  ctx.fillRect(
-    -25,
-    0,
-    12,
-    7
-  );
-
-  ctx.fillRect(
-    13,
-    0,
-    12,
-    7
-  );
-
-  drawWheel(
-    -23,
-    7
-  );
-
-  drawWheel(
-    23,
-    7
-  );
-}
-
-
-/* =========================================================
-   TRUCK
-   ========================================================= */
-
-function drawTruck(){
-
-  ctx.shadowBlur=18;
-
-  ctx.shadowColor =
-    "#ff9d32";
-
-  ctx.fillStyle =
-    "#202438";
-
-  roundRect(
-    -34,
-    -70,
-    68,
-    82,
-    8
-  );
-
-  ctx.fill();
-
-  ctx.shadowBlur=0;
-
-  ctx.fillStyle =
-    "#ff9d32";
-
-  ctx.fillRect(
-    -28,
-    -63,
-    56,
-    5
-  );
-
-  ctx.fillStyle =
-    "#86eaff";
-
-  ctx.fillRect(
-    -22,
-    -50,
-    44,
-    20
-  );
-
-  drawWheel(
-    -27,
-    8
-  );
-
-  drawWheel(
-    27,
-    8
-  );
-}
-
-
-/* =========================================================
-   CRATE
-   ========================================================= */
-
-function drawCrate(){
-
-  ctx.shadowBlur=16;
-
-  ctx.shadowColor =
-    "#ffba36";
-
-  ctx.fillStyle =
-    "#bd6c2d";
-
-  ctx.fillRect(
-    -28,
-    -35,
-    56,
-    55
-  );
-
-  ctx.shadowBlur=0;
-
-  ctx.strokeStyle =
-    "#ffd070";
-
-  ctx.lineWidth=4;
-
-  ctx.strokeRect(
-    -28,
-    -35,
-    56,
-    55
-  );
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -28,
-    -35
-  );
-
-  ctx.lineTo(
-    28,
-    20
-  );
-
-  ctx.moveTo(
-    28,
-    -35
-  );
-
-  ctx.lineTo(
-    -28,
-    20
-  );
-
-  ctx.stroke();
-}
-
-
-/* =========================================================
-   BARRIER
-   ========================================================= */
-
-function drawBarrier(){
-
-  ctx.shadowBlur=20;
-
-  ctx.shadowColor =
-    "#ff3f6d";
-
-  ctx.fillStyle =
-    "#15182a";
-
-  roundRect(
-    -38,
-    -30,
-    76,
-    38,
-    8
-  );
-
-  ctx.fill();
-
-  ctx.shadowBlur=0;
-
-  ctx.strokeStyle =
-    "#ff416c";
-
-  ctx.lineWidth=4;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -30,
-    -20
-  );
-
-  ctx.lineTo(
-    -15,
-    -2
-  );
-
-  ctx.moveTo(
-    -5,
-    -20
-  );
-
-  ctx.lineTo(
-    10,
-    -2
-  );
-
-  ctx.moveTo(
-    20,
-    -20
-  );
-
-  ctx.lineTo(
-    35,
-    -2
-  );
-
-  ctx.stroke();
-}
-
-
-/* =========================================================
-   LASER
-   ========================================================= */
-
-function drawLaser(){
-
-  ctx.shadowBlur=25;
-
-  ctx.shadowColor =
-    "#ff1aff";
-
-  ctx.fillStyle =
-    "#24203d";
-
-  ctx.fillRect(
-    -42,
-    -65,
-    8,
-    75
-  );
-
-  ctx.fillRect(
-    34,
-    -65,
-    8,
-    75
-  );
-
-  ctx.strokeStyle =
-    "#ff2cff";
-
-  ctx.lineWidth=5;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -38,
-    -50
-  );
-
-  ctx.lineTo(
-    38,
-    -50
-  );
-
-  ctx.stroke();
-
-  ctx.shadowBlur=0;
-}
-
-
-/* =========================================================
-   WHEEL
-   ========================================================= */
-
-function drawWheel(
-  x,
-  y
+for(
+  let z=-10;
+  z>-470;
+  z-=14
 ){
 
-  ctx.fillStyle =
-    "#05060b";
+  const left =
+    createBuilding(
+      -10-Math.random()*7,
+      z,
+      4+Math.random()*4,
+      10+Math.random()*22,
+      5
+    );
 
-  ctx.beginPath();
+  const right =
+    createBuilding(
+      10+Math.random()*7,
+      z-7,
+      4+Math.random()*4,
+      9+Math.random()*25,
+      5
+    );
 
-  ctx.arc(
-    x,
-    y,
-    8,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-  ctx.strokeStyle =
-    "#6170a0";
-
-  ctx.stroke();
+  buildingGroup.add(left);
+  buildingGroup.add(right);
 }
 
 
-/* =========================================================
-   HUMAN RUNNER
-   ========================================================= */
+/* =====================================================
+   PLAYER
+===================================================== */
 
-function drawPlayer(){
+const player =
+  new THREE.Group();
 
-  const x =
-    laneX(player.lane);
+player.position.set(
+  0,
+  0,
+  5
+);
 
-  const groundY =
-    H*.80;
+scene.add(player);
 
-  const jumpOffset =
-    player.y*H*.28;
+const characters=[
 
-  const y =
-    groundY-jumpOffset;
+  {
+    shirt:0x087eff,
+    pants:0x172033,
+    skin:0xd89b72,
+    hair:0x17120e,
+    glow:0x00eaff
+  },
 
-  const run =
-    Math.sin(
-      player.anim
+  {
+    shirt:0xff3b30,
+    pants:0x15151d,
+    skin:0xc98563,
+    hair:0x29130b,
+    glow:0xff4b38
+  },
+
+  {
+    shirt:0x7c4dff,
+    pants:0x101018,
+    skin:0xb97857,
+    hair:0x050509,
+    glow:0xb76cff
+  },
+
+  {
+    shirt:0x222832,
+    pants:0x090b10,
+    skin:0x9f654d,
+    hair:0x020204,
+    glow:0x9dffff
+  }
+
+];
+
+let selectedCharacter=0;
+
+
+/* PLAYER BODY */
+
+let body;
+let head;
+let hair;
+let leftArm;
+let rightArm;
+let leftLeg;
+let rightLeg;
+
+function buildPlayer(){
+
+  while(
+    player.children.length
+  ){
+
+    player.remove(
+      player.children[0]
     );
+  }
 
   const c =
-    characters[
-      selectedCharacter
-    ];
-
-  ctx.save();
-
-  ctx.translate(
-    x,
-    y
-  );
-
-  /* SHADOW */
-
-  const shadowSize =
-    Math.max(
-      8,
-      30-player.y*25
-    );
-
-  ctx.globalAlpha=.35;
-
-  ctx.fillStyle="#000";
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    0,
-    9,
-    shadowSize,
-    shadowSize*.35,
-    0,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-  ctx.globalAlpha=1;
-
-  /* SHIELD */
-
-  if(
-    player.shield>0
-  ){
-
-    ctx.shadowBlur=30;
-
-    ctx.shadowColor =
-      "#00eaff";
-
-    ctx.strokeStyle =
-      "rgba(0,230,255,.8)";
-
-    ctx.lineWidth=3;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      0,
-      -48,
-      42+
-      Math.sin(
-        performance.now()*.006
-      )*4,
-      0,
-      Math.PI*2
-    );
-
-    ctx.stroke();
-  }
-
-  /* BOOST TRAIL */
-
-  if(
-    player.boost>0
-  ){
-
-    ctx.globalAlpha=.5;
-
-    for(
-      let i=0;
-      i<5;
-      i++
-    ){
-
-      ctx.fillStyle =
-        i%2
-        ?
-        "#8d4dff"
-        :
-        "#00eaff";
-
-      ctx.fillRect(
-        -25-i*12,
-        -20+
-        Math.sin(
-          player.anim+i
-        )*8,
-        30,
-        3
-      );
-    }
-
-    ctx.globalAlpha=1;
-  }
-
-  /* LEGS */
-
-  const legA =
-    run*.55;
-
-  const legB =
-    -run*.55;
-
-  ctx.lineCap =
-    "round";
-
-  ctx.strokeStyle =
-    c.pants;
-
-  ctx.lineWidth=10;
-
-    /* BACK LEG */
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    0,
-    30
-  );
-
-  ctx.lineTo(
-    legB * 0.35,
-    58
-  );
-
-  ctx.lineTo(
-    legB,
-    82
-  );
-
-  ctx.stroke();
-
-
-  /* BACK SHOE */
-
-  ctx.strokeStyle =
-    "#111827";
-
-  ctx.lineWidth=11;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    legB-2,
-    82
-  );
-
-  ctx.lineTo(
-    legB-15,
-    84
-  );
-
-  ctx.stroke();
-
-
-  /* FRONT LEG */
-
-  ctx.strokeStyle =
-    c.pants;
-
-  ctx.lineWidth=10;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    0,
-    30
-  );
-
-  ctx.lineTo(
-    legA * 0.35,
-    58
-  );
-
-  ctx.lineTo(
-    legA,
-    82
-  );
-
-  ctx.stroke();
-
-
-  /* FRONT SHOE */
-
-  ctx.strokeStyle =
-    "#111827";
-
-  ctx.lineWidth=11;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    legA,
-    82
-  );
-
-  ctx.lineTo(
-    legA+16,
-    84
-  );
-
-  ctx.stroke();
-
-
-  /* SHOE GLOW */
-
-  ctx.shadowBlur=12;
-
-  ctx.shadowColor=
-    c.accent;
-
-  ctx.strokeStyle=
-    c.accent;
-
-  ctx.lineWidth=3;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    legA,
-    84
-  );
-
-  ctx.lineTo(
-    legA+14,
-    84
-  );
-
-  ctx.stroke();
-
-  ctx.shadowBlur=0;
+    characters[selectedCharacter];
 
 
   /* BODY */
 
-  ctx.fillStyle=
-    c.shirt;
+  body =
+    new THREE.Mesh(
 
-  ctx.beginPath();
+      new THREE.CapsuleGeometry(
+        .48,
+        1.15,
+        8,
+        16
+      ),
 
-  ctx.roundRect(
-    -18,
-    -12,
-    36,
-    48,
-    10
-  );
+      mat(
+        c.shirt,
+        c.glow,
+        .25
+      )
 
-  ctx.fill();
+    );
 
+  body.position.y=1.55;
+  body.castShadow=true;
 
-  /* JACKET HIGHLIGHT */
-
-  ctx.fillStyle=
-    "rgba(255,255,255,.18)";
-
-  ctx.fillRect(
-    -13,
-    -7,
-    6,
-    35
-  );
-
-
-  /* NEON CHEST LOGO */
-
-  ctx.shadowBlur=12;
-
-  ctx.shadowColor=
-    c.accent;
-
-  ctx.fillStyle=
-    c.accent;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    0,
-    8,
-    5,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-  ctx.shadowBlur=0;
-
-
-  /* NECK */
-
-  ctx.fillStyle=
-    c.skin;
-
-  ctx.fillRect(
-    -7,
-    -22,
-    14,
-    12
-  );
+  player.add(body);
 
 
   /* HEAD */
 
-  ctx.beginPath();
+  head =
+    new THREE.Mesh(
 
-  ctx.arc(
-    0,
-    -38,
-    18,
-    0,
-    Math.PI*2
-  );
+      new THREE.SphereGeometry(
+        .38,
+        24,
+        20
+      ),
 
-  ctx.fill();
+      mat(c.skin)
+
+    );
+
+  head.position.y=2.65;
+  head.castShadow=true;
+
+  player.add(head);
 
 
   /* HAIR */
 
-  ctx.fillStyle=
-    c.hair;
+  hair =
+    new THREE.Mesh(
+
+      new THREE.SphereGeometry(
+        .4,
+        20,
+        12,
+        0,
+        Math.PI*2,
+        0,
+        Math.PI*.52
+      ),
+
+      mat(c.hair)
 
-  ctx.beginPath();
-
-  ctx.arc(
-    0,
-    -43,
-    18,
-    Math.PI,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -18,
-    -42
-  );
-
-  ctx.lineTo(
-    -12,
-    -55
-  );
-
-  ctx.lineTo(
-    -4,
-    -48
-  );
-
-  ctx.lineTo(
-    4,
-    -57
-  );
-
-  ctx.lineTo(
-    11,
-    -48
-  );
-
-  ctx.lineTo(
-    18,
-    -42
-  );
-
-  ctx.closePath();
-
-  ctx.fill();
-
-
-  /* EYES */
-
-  ctx.fillStyle=
-    "#ffffff";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    -6,
-    -38,
-    2.5,
-    0,
-    Math.PI*2
-  );
-
-  ctx.arc(
-    6,
-    -38,
-    2.5,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  /* EYE GLOW */
-
-  ctx.fillStyle=
-    c.accent;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    -6,
-    -38,
-    1.2,
-    0,
-    Math.PI*2
-  );
-
-  ctx.arc(
-    6,
-    -38,
-    1.2,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  /* FACE */
-
-  ctx.strokeStyle=
-    "rgba(80,30,20,.45)";
-
-  ctx.lineWidth=2;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    0,
-    -34,
-    7,
-    0.2,
-    Math.PI-0.2
-  );
-
-  ctx.stroke();
-
-
-  /* RUNNING ARM */
-
-  ctx.strokeStyle=
-    c.shirt;
-
-  ctx.lineWidth=9;
-
-  const armA =
-    Math.sin(
-      player.anim
-    ) * 18;
-
-  const armB =
-    -armA;
-
-  /* BACK ARM */
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    -16,
-    -5
-  );
-
-  ctx.lineTo(
-    -28,
-    10 + armB*.35
-  );
-
-  ctx.lineTo(
-    -25,
-    28 + armB
-  );
-
-  ctx.stroke();
-
-
-  /* BACK HAND */
-
-  ctx.fillStyle=
-    c.skin;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    -25,
-    29 + armB,
-    6,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  /* FRONT ARM */
-
-  ctx.strokeStyle=
-    c.shirt;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    16,
-    -5
-  );
-
-  ctx.lineTo(
-    28,
-    10 + armA*.35
-  );
-
-  ctx.lineTo(
-    25,
-    28 + armA
-  );
-
-  ctx.stroke();
-
-
-  /* FRONT HAND */
-
-  ctx.fillStyle=
-    c.skin;
-
-  ctx.beginPath();
-
-  ctx.arc(
-    25,
-    29 + armA,
-    6,
-    0,
-    Math.PI*2
-  );
-
-  ctx.fill();
-
-
-  /* SHIELD */
-
-  if(player.shield){
-
-    ctx.save();
-
-    ctx.globalAlpha=
-      .22 +
-      Math.sin(
-        performance.now()/120
-      )*.08;
-
-    ctx.strokeStyle=
-      c.accent;
-
-    ctx.lineWidth=4;
-
-    ctx.shadowBlur=25;
-
-    ctx.shadowColor=
-      c.accent;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      0,
-      5,
-      65,
-      0,
-      Math.PI*2
     );
 
-    ctx.stroke();
+  hair.position.y=2.75;
 
-    ctx.restore();
-  }
+  player.add(hair);
 
 
-  /* BOOST TRAIL */
+  /* ARMS */
 
-  if(player.boost){
+  leftArm =
+    createLimb(
+      .15,
+      .72,
+      c.shirt
+    );
 
-    ctx.save();
+  rightArm =
+    createLimb(
+      .15,
+      .72,
+      c.shirt
+    );
 
-    ctx.globalAlpha=.45;
+  leftArm.position.set(
+    -.58,
+    1.65,
+    0
+  );
 
-    ctx.fillStyle=
-      c.accent;
+  rightArm.position.set(
+    .58,
+    1.65,
+    0
+  );
 
-    for(
-      let i=0;
-      i<5;
-      i++
-    ){
+  player.add(leftArm);
+  player.add(rightArm);
 
-      ctx.fillRect(
-        -8,
-        75+i*9,
-        16-i*2,
+
+  /* LEGS */
+
+  leftLeg =
+    createLimb(
+      .19,
+      .82,
+      c.pants
+    );
+
+  rightLeg =
+    createLimb(
+      .19,
+      .82,
+      c.pants
+    );
+
+  leftLeg.position.set(
+    -.25,
+    .65,
+    0
+  );
+
+  rightLeg.position.set(
+    .25,
+    .65,
+    0
+  );
+
+  player.add(leftLeg);
+  player.add(rightLeg);
+
+
+  /* SHOES */
+
+  const shoeMat =
+    mat(
+      0x10141d,
+      c.glow,
+      1.5
+    );
+
+  const shoeGeo =
+    new THREE.BoxGeometry(
+      .38,
+      .18,
+      .65
+    );
+
+  const shoe1 =
+    new THREE.Mesh(
+      shoeGeo,
+      shoeMat
+    );
+
+  const shoe2 =
+    new THREE.Mesh(
+      shoeGeo,
+      shoeMat
+    );
+
+  shoe1.position.set(
+    -.25,
+    .12,
+    -.12
+  );
+
+  shoe2.position.set(
+    .25,
+    .12,
+    -.12
+  );
+
+  player.add(
+    shoe1,
+    shoe2
+  );
+
+
+  /* GLOW RING */
+
+  const ring =
+    new THREE.Mesh(
+
+      new THREE.TorusGeometry(
+        .65,
+        .025,
+        8,
+        40
+      ),
+
+      mat(
+        c.glow,
+        c.glow,
         5
-      );
-    }
+      )
 
-    ctx.restore();
-  }
+    );
 
+  ring.rotation.x=
+    Math.PI/2;
 
-  ctx.restore();
+  ring.position.y=.03;
+
+  player.add(ring);
 }
 
 
-/* =========================
-   PARTICLES
-========================= */
+function createLimb(
+  radius,
+  length,
+  color
+){
 
-function drawParticles(){
+  const g =
+    new THREE.Group();
+
+  const mesh =
+    new THREE.Mesh(
+
+      new THREE.CapsuleGeometry(
+        radius,
+        length,
+        6,
+        10
+      ),
+
+      mat(color)
+
+    );
+
+  mesh.position.y=
+    -length*.35;
+
+  mesh.castShadow=true;
+
+  g.add(mesh);
+
+  return g;
+}
+
+buildPlayer();
+
+
+/* =====================================================
+   OBSTACLES
+===================================================== */
+
+const obstacles=[];
+
+function createCar(){
+
+  const g =
+    new THREE.Group();
+
+  const base =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        1.55,
+        .55,
+        2.6
+      ),
+
+      mat(
+        0xb3162e,
+        0x5b0010,
+        .6
+      )
+
+    );
+
+  base.position.y=.5;
+
+  base.castShadow=true;
+
+  g.add(base);
+
+
+  const cabin =
+    new THREE.Mesh(
+
+      new THREE.BoxGeometry(
+        1.15,
+        .48,
+        1.2
+      ),
+
+      mat(
+        0x152432,
+        0x00394c,
+        .8
+      )
+
+    );
+
+  cabin.position.y=.95;
+
+  g.add(cabin);
+
+
+  const wheelMat =
+    mat(0x050505);
 
   for(
-    const p of particles
+    const x of [-.82,.82]
   ){
 
-    ctx.save();
-
-    ctx.globalAlpha=
-      p.life/p.max;
-
-    ctx.fillStyle=
-      p.color;
-
-    ctx.shadowBlur=12;
-
-    ctx.shadowColor=
-      p.color;
-
-    ctx.beginPath();
-
-    ctx.arc(
-      p.x,
-      p.y,
-      p.size,
-      0,
-      Math.PI*2
-    );
-
-    ctx.fill();
-
-    ctx.restore();
-  }
-}
-
-
-/* =========================
-   HUD
-========================= */
-
-function updateHUD(){
-
-  scoreEl.textContent=
-    Math.floor(score);
-
-  levelEl.textContent=
-    level;
-
-  bestEl.textContent=
-    Math.max(
-      best,
-      Math.floor(score)
-    );
-
-  collectedEl.textContent=
-    collected;
-
-  energyBar.style.width=
-    Math.max(
-      0,
-      energy
-    )+"%";
-}
-
-
-/* =========================
-   ROUND RECT
-========================= */
-
-function roundRect(
-  ctx,
-  x,
-  y,
-  w,
-  h,
-  r
-){
-
-  const radius=
-    Math.min(
-      r,
-      Math.abs(w)/2,
-      Math.abs(h)/2
-    );
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    x+radius,
-    y
-  );
-
-  ctx.arcTo(
-    x+w,
-    y,
-    x+w,
-    y+h,
-    radius
-  );
-
-  ctx.arcTo(
-    x+w,
-    y+h,
-    x,
-    y+h,
-    radius
-  );
-
-  ctx.arcTo(
-    x,
-    y+h,
-    x,
-    y,
-    radius
-  );
-
-  ctx.arcTo(
-    x,
-    y,
-    x+w,
-    y,
-    radius
-  );
-
-  ctx.closePath();
-}
-
-
-/* =========================
-   MAIN GAME LOOP
-========================= */
-
-function loop(
-  timestamp
-){
-
-  if(!lastTime)
-    lastTime=
-      timestamp;
-
-  const dt=
-    Math.min(
-      40,
-      timestamp-lastTime
-    );
-
-  lastTime=
-    timestamp;
-
-
-  if(running && !paused){
-
-    update(dt);
-
-    draw();
-  }
-
-
-  requestAnimationFrame(
-    loop
-  );
-}
-
-
-/* =========================
-   PLAYER CONTROLS
-========================= */
-
-function moveLeft(){
-
-  if(!running || paused)
-    return;
-
-  player.targetLane=
-    Math.max(
-      0,
-      player.targetLane-1
-    );
-
-  shake=
-    3;
-}
-
-
-function moveRight(){
-
-  if(!running || paused)
-    return;
-
-  player.targetLane=
-    Math.min(
-      2,
-      player.targetLane+1
-    );
-
-  shake=
-    3;
-}
-
-
-function jump(){
-
-  if(!running || paused)
-    return;
-
-  if(
-    player.y===0
-  ){
-
-    player.vy=
-      0.95;
-
-    player.jump=
-      true;
-
-    burst(
-      laneX(
-        player.lane,
-        .95
-      ),
-      H*.78,
-      8,
-      "#ffffff"
-    );
-  }
-}
-
-
-/* =========================
-   KEYBOARD
-========================= */
-
-document.addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="ArrowLeft" ||
-      e.key.toLowerCase()==="a"
+    for(
+      const z of [-.82,.82]
     ){
 
-      moveLeft();
-    }
+      const wheel =
+        new THREE.Mesh(
 
-    if(
-      e.key==="ArrowRight" ||
-      e.key.toLowerCase()==="d"
-    ){
+          new THREE.CylinderGeometry(
+            .27,
+            .27,
+            .15,
+            14
+          ),
 
-      moveRight();
-    }
+          wheelMat
 
-    if(
-      e.key==="ArrowUp" ||
-      e.key===" " ||
-      e.key.toLowerCase()==="w"
-    ){
-
-      e.preventDefault();
-
-      jump();
-    }
-
-    if(
-      e.key.toLowerCase()==="p"
-    ){
-
-      if(running){
-
-        if(paused)
-          resumeGame();
-
-        else
-          pauseGame();
-      }
-    }
-  }
-);
-
-
-/* =========================
-   MOBILE BUTTON PRESS
-========================= */
-
-function press(
-  element,
-  action
-){
-
-  element.addEventListener(
-    "touchstart",
-    e=>{
-
-      e.preventDefault();
-
-      action();
-
-    },
-    {
-      passive:false
-    }
-  );
-
-  element.addEventListener(
-    "mousedown",
-    e=>{
-
-      e.preventDefault();
-
-      action();
-
-    }
-  );
-}
-
-
-press(
-  leftBtn,
-  moveLeft
-);
-
-press(
-  rightBtn,
-  moveRight
-);
-
-press(
-  jumpBtn,
-  jump
-);
-
-
-/* =========================
-   MENU BUTTONS
-========================= */
-
-startBtn.onclick=
-  startGame;
-
-resumeBtn.onclick=
-  resumeGame;
-
-pauseRestartBtn.onclick=
-  startGame;
-
-pauseHomeBtn.onclick=
-  goHome;
-
-restartBtn.onclick=
-  startGame;
-
-homeBtn.onclick=
-  goHome;
-
-pauseBtn.onclick=()=>{
-
-  if(!running)
-    return;
-
-  if(paused)
-    resumeGame();
-
-  else
-    pauseGame();
-};
-
-
-/* =========================
-   CHARACTER SELECT
-========================= */
-
-document
-  .querySelectorAll(
-    ".char"
-  )
-  .forEach(btn=>{
-
-    btn.onclick=()=>{
-
-      document
-        .querySelectorAll(
-          ".char"
-        )
-        .forEach(
-          x=>
-            x.classList
-             .remove("selected")
         );
 
-      btn.classList.add(
-        "selected"
+      wheel.rotation.z=
+        Math.PI/2;
+
+      wheel.position.set(
+        x,
+        .32,
+        z
       );
 
-      selectedCharacter=
-        Number(
-          btn.dataset.char
-        );
-
-      drawPreviews();
-    };
-  });
-
-
-/* =========================
-   SWIPE CONTROLS
-========================= */
-
-let touchStartX=0;
-let touchStartY=0;
-
-canvas.addEventListener(
-  "touchstart",
-  e=>{
-
-    const t=
-      e.touches[0];
-
-    touchStartX=
-      t.clientX;
-
-    touchStartY=
-      t.clientY;
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-canvas.addEventListener(
-  "touchend",
-  e=>{
-
-    const t=
-      e.changedTouches[0];
-
-    const dx=
-      t.clientX-touchStartX;
-
-    const dy=
-      t.clientY-touchStartY;
-
-    if(
-      Math.abs(dx)>
-      Math.abs(dy)
-    ){
-
-      if(
-        Math.abs(dx)>35
-      ){
-
-        if(dx<0)
-          moveLeft();
-
-        else
-          moveRight();
-      }
-
-    }else{
-
-      if(
-        dy < -35
-      ){
-
-        jump();
-      }
-    }
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-/* =========================
-   AUTO PAUSE
-========================= */
-
-document.addEventListener(
-  "visibilitychange",
-  ()=>{
-
-    if(
-      document.hidden &&
-      running &&
-      !paused
-    ){
-
-      pauseGame();
+      g.add(wheel);
     }
   }
-);
 
-
-/* =========================
-   CHARACTER PREVIEWS
-========================= */
-
-function drawPreviews(){
-
-  document
-    .querySelectorAll(
-      ".preview"
-    )
-    .forEach(
-      (preview,index)=>{
-
-        const pctx=
-          preview.getContext(
-            "2d"
-          );
-
-        const pw=
-          preview.width;
-
-        const ph=
-          preview.height;
-
-        pctx.clearRect(
-          0,
-          0,
-          pw,
-          ph
-        );
-
-        pctx.save();
-
-        pctx.translate(
-          pw/2,
-          ph/2+20
-        );
-
-        pctx.scale(
-          .65,
-          .65
-        );
-
-        const oldCtx=
-          ctx;
-
-        /* small preview */
-
-        const c=
-          characters[index];
-
-        pctx.fillStyle=
-          c.pants;
-
-        pctx.fillRect(
-          -8,
-          15,
-          16,
-          35
-        );
-
-        pctx.fillStyle=
-          c.shirt;
-
-        pctx.fillRect(
-          -14,
-          -15,
-          28,
-          35
-        );
-
-        pctx.fillStyle=
-          c.skin;
-
-        pctx.beginPath();
-
-        pctx.arc(
-          0,
-          -30,
-          15,
-          0,
-          Math.PI*2
-        );
-
-        pctx.fill();
-
-        pctx.fillStyle=
-          c.hair;
-
-        pctx.beginPath();
-
-        pctx.arc(
-          0,
-          -35,
-          15,
-          Math.PI,
-          Math.PI*2
-        );
-
-        pctx.fill();
-
-        pctx.restore();
-      }
-    );
+  return g;
 }
 
 
-/* =========================
-   INITIALIZE
-========================= */
+function createTruck(){
 
-resize();
+  const g =
+    createCar();
 
-drawPreviews();
-
-updateHUD();
-
-goHome();
-
-requestAnimationFrame(
-  loop
-);
-
-
-/* =========================
-   START GAME
-========================= */
-
-function startGame(){
-
-  running = true;
-  paused = false;
-
-  score = 0;
-  level = 1;
-  energy = 100;
-  collected = 0;
-
-  gameTime = 0;
-  roadScroll = 0;
-
-  obstacles.length = 0;
-  orbs.length = 0;
-  particles.length = 0;
-  signs.length = 0;
-
-  player.lane = 1;
-  player.targetLane = 1;
-  player.y = 0;
-  player.vy = 0;
-  player.jump = false;
-  player.shield = false;
-  player.magnet = false;
-  player.boost = false;
-  player.anim = 0;
-
-  spawnTimer = 700;
-  orbTimer = 500;
-  signTimer = 1000;
-
-  hideAllCards();
-
-  screen.classList.add("hidden");
-
-  pauseBtn.style.display = "block";
-
-  updateHUD();
-
-  showMessage("GET READY!");
-
-  setTimeout(() => {
-
-    if(running && !paused){
-      showMessage("RUN!");
-
-    }
-
-  },700);
-}
-
-
-/* =========================
-   PAUSE
-========================= */
-
-function pauseGame(){
-
-  if(!running)
-    return;
-
-  paused = true;
-
-  screen.classList.remove("hidden");
-
-  homeCard.classList.add("hidden");
-  gameOverCard.classList.add("hidden");
-
-  pauseCard.classList.remove("hidden");
-
-  pauseBtn.textContent = "▶";
-
-}
-
-
-/* =========================
-   RESUME
-========================= */
-
-function resumeGame(){
-
-  if(!running)
-    return;
-
-  paused = false;
-
-  screen.classList.add("hidden");
-
-  pauseCard.classList.add("hidden");
-
-  pauseBtn.textContent = "Ⅱ";
-
-  lastTime = performance.now();
-}
-
-
-/* =========================
-   GAME OVER
-========================= */
-
-function gameOver(){
-
-  running = false;
-  paused = false;
-
-  if(score > best){
-
-    best = Math.floor(score);
-
-    localStorage.setItem(
-      "neonEscapeBest",
-      best
-    );
-  }
-
-  screen.classList.remove("hidden");
-
-  pauseCard.classList.add("hidden");
-  homeCard.classList.add("hidden");
-
-  gameOverCard.classList.remove("hidden");
-
-  finalScore.textContent =
-    Math.floor(score);
-
-  finalBest.textContent =
-    best;
-
-  pauseBtn.style.display = "none";
-
-  burst(
-    W/2,
-    H*.55,
-    35,
-    "#ff3366"
+  g.scale.set(
+    1.25,
+    1.35,
+    1.35
   );
 
+  return g;
 }
 
 
-/* =========================
-   HIDE ALL CARDS
-========================= */
+function createBarrier(){
 
-function hideAllCards(){
+  const g =
+    new THREE.Group();
 
-  homeCard.classList.add("hidden");
-  pauseCard.classList.add("hidden");
-  gameOverCard.classList.add("hidden");
+  const bar =
+    new THREE.Mesh(
 
+      new THREE.BoxGeometry(
+        2.4,
+        .65,
+        .35
+      ),
+
+      mat(
+        0xff7a00,
+        0xff3500,
+        2
+      )
+
+    );
+
+  bar.position.y=.65;
+
+  g.add(bar);
+
+  for(
+    const x of [-.9,.9]
+  ){
+
+    const leg =
+      new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+          .18,
+          .7,
+          .25
+        ),
+
+        mat(0x343a46)
+
+      );
+
+    leg.position.set(
+      x,
+      .3,
+      0
+    );
+
+    g.add(leg);
+  }
+
+  return g;
 }
 
 
-/* =========================
-   HOME
-========================= */
+function spawnObstacle(){
 
-function goHome(){
+  const types=[
+    createCar,
+    createCar,
+    createTruck,
+    createBarrier
+  ];
 
-  running = false;
-  paused = false;
+  const obj =
+    types[
+      Math.floor(
+        Math.random()*types.length
+      )
+    ]();
 
-  hideAllCards();
+  const lane =
+    Math.floor(
+      Math.random()*3
+    )-1;
 
-  screen.classList.remove("hidden");
+  obj.position.set(
+    lane*3.2,
+    0,
+    -90
+  );
 
-  homeCard.classList.remove("hidden");
+  obstacleGroup.add(obj);
 
-  pauseBtn.style.display = "none";
-
-  updateHUD();
+  obstacles.push({
+    mesh:obj,
+    lane:lane,
+    speed:22+Math.random()*7
+  });
 }
 
 
-/* =========================
-   MESSAGE
-========================= */
+/* =====================================================
+   ENERGY ORBS
+===================================================== */
 
-function showMessage(text){
+const orbs=[];
 
-  message.textContent = text;
+function spawnOrb(){
 
-  message.classList.remove("show");
+  const lane =
+    Math.floor(
+      Math.random()*3
+    )-1;
 
-  void message.offsetWidth;
+  const orb =
+    new THREE.Mesh(
 
-  message.classList.add("show");
+      new THREE.IcosahedronGeometry(
+        .35,
+        2
+      ),
 
+      mat(
+        0x00ffff,
+        0x00ffff,
+        8
+      )
+
+    );
+
+  orb.position.set(
+    lane*3.2,
+    1.3,
+    -90
+  );
+
+  orbGroup.add(orb);
+
+  orbs.push({
+    mesh:orb,
+    lane:lane,
+    speed:24
+  });
 }
 
 
-/* =========================
-   INITIAL STATE
-========================= */
+/* =====================================================
+   GAME STATE
+===================================================== */
 
-best =
+let running=false;
+let paused=false;
+
+let score=0;
+let level=1;
+let energy=100;
+
+let speed=25;
+
+let spawnTimer=0;
+let orbTimer=0;
+
+let playerLane=0;
+let targetX=0;
+
+let jumpY=0;
+let jumpVelocity=0;
+
+let runTime=0;
+
+let last=performance.now();
+
+let best=
   Number(
     localStorage.getItem(
       "neonEscapeBest"
-    ) || 0
+    )||0
   );
 
-updateHUD();
 
-goHome();
+/* =====================================================
+   DOM
+===================================================== */
 
+const scoreEl=
+  document.getElementById("score");
 
-/* =========================
-   RESIZE
-========================= */
+const levelEl=
+  document.getElementById("level");
 
-window.addEventListener(
-  "resize",
-  resize
-);
+const energyBar=
+  document.getElementById("energyBar");
 
+const screen=
+  document.getElementById("screen");
 
-/* =========================
-   START RENDER LOOP
-========================= */
+const homeCard=
+  document.getElementById("home");
 
-requestAnimationFrame(loop);
+const pauseCard=
+  document.getElementById("pauseCard");
 
-</script>
+const overCard=
+  document.getElementById("over");
 
-</body>
-</html>
+cons
