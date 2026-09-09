@@ -4036,3 +4036,237 @@ goHome();
 requestAnimationFrame(
   loop
 );
+
+
+/* =========================
+   START GAME
+========================= */
+
+function startGame(){
+
+  running = true;
+  paused = false;
+
+  score = 0;
+  level = 1;
+  energy = 100;
+  collected = 0;
+
+  gameTime = 0;
+  roadScroll = 0;
+
+  obstacles.length = 0;
+  orbs.length = 0;
+  particles.length = 0;
+  signs.length = 0;
+
+  player.lane = 1;
+  player.targetLane = 1;
+  player.y = 0;
+  player.vy = 0;
+  player.jump = false;
+  player.shield = false;
+  player.magnet = false;
+  player.boost = false;
+  player.anim = 0;
+
+  spawnTimer = 700;
+  orbTimer = 500;
+  signTimer = 1000;
+
+  hideAllCards();
+
+  screen.classList.add("hidden");
+
+  pauseBtn.style.display = "block";
+
+  updateHUD();
+
+  showMessage("GET READY!");
+
+  setTimeout(() => {
+
+    if(running && !paused){
+      showMessage("RUN!");
+
+    }
+
+  },700);
+}
+
+
+/* =========================
+   PAUSE
+========================= */
+
+function pauseGame(){
+
+  if(!running)
+    return;
+
+  paused = true;
+
+  screen.classList.remove("hidden");
+
+  homeCard.classList.add("hidden");
+  gameOverCard.classList.add("hidden");
+
+  pauseCard.classList.remove("hidden");
+
+  pauseBtn.textContent = "▶";
+
+}
+
+
+/* =========================
+   RESUME
+========================= */
+
+function resumeGame(){
+
+  if(!running)
+    return;
+
+  paused = false;
+
+  screen.classList.add("hidden");
+
+  pauseCard.classList.add("hidden");
+
+  pauseBtn.textContent = "Ⅱ";
+
+  lastTime = performance.now();
+}
+
+
+/* =========================
+   GAME OVER
+========================= */
+
+function gameOver(){
+
+  running = false;
+  paused = false;
+
+  if(score > best){
+
+    best = Math.floor(score);
+
+    localStorage.setItem(
+      "neonEscapeBest",
+      best
+    );
+  }
+
+  screen.classList.remove("hidden");
+
+  pauseCard.classList.add("hidden");
+  homeCard.classList.add("hidden");
+
+  gameOverCard.classList.remove("hidden");
+
+  finalScore.textContent =
+    Math.floor(score);
+
+  finalBest.textContent =
+    best;
+
+  pauseBtn.style.display = "none";
+
+  burst(
+    W/2,
+    H*.55,
+    35,
+    "#ff3366"
+  );
+
+}
+
+
+/* =========================
+   HIDE ALL CARDS
+========================= */
+
+function hideAllCards(){
+
+  homeCard.classList.add("hidden");
+  pauseCard.classList.add("hidden");
+  gameOverCard.classList.add("hidden");
+
+}
+
+
+/* =========================
+   HOME
+========================= */
+
+function goHome(){
+
+  running = false;
+  paused = false;
+
+  hideAllCards();
+
+  screen.classList.remove("hidden");
+
+  homeCard.classList.remove("hidden");
+
+  pauseBtn.style.display = "none";
+
+  updateHUD();
+}
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text){
+
+  message.textContent = text;
+
+  message.classList.remove("show");
+
+  void message.offsetWidth;
+
+  message.classList.add("show");
+
+}
+
+
+/* =========================
+   INITIAL STATE
+========================= */
+
+best =
+  Number(
+    localStorage.getItem(
+      "neonEscapeBest"
+    ) || 0
+  );
+
+updateHUD();
+
+goHome();
+
+
+/* =========================
+   RESIZE
+========================= */
+
+window.addEventListener(
+  "resize",
+  resize
+);
+
+
+/* =========================
+   START RENDER LOOP
+========================= */
+
+requestAnimationFrame(loop);
+
+</script>
+
+</body>
+</html>
