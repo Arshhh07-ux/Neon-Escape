@@ -1178,3 +1178,1741 @@ function update(dt){
     o.z +=
       o.speed*dt*
       (1+level*.06)*
+      speedMultiplier;
+
+    if(o.z > 1.12){
+
+      obstacles.splice(i,1);
+
+      continue;
+    }
+
+    checkObstacle(o);
+  }
+
+  /* =========================
+     UPDATE ENERGY ORBS
+     ========================= */
+
+  for(let i=orbs.length-1;i>=0;i--){
+
+    const o = orbs[i];
+
+    o.z +=
+      .00055 *
+      dt *
+      (1+level*.05);
+
+    o.spin +=
+      dt*.006;
+
+    /* MAGNET POWER */
+
+    if(
+      player.magnet > 0 &&
+      Math.abs(o.z-.82)<.28
+    ){
+
+      o.lane +=
+        (player.lane-o.lane)*.08;
+    }
+
+    /* COLLECT */
+
+    if(
+      Math.abs(o.z-.83)<.075 &&
+      Math.abs(o.lane-player.lane)<.34
+    ){
+
+      collectOrb(o);
+
+      orbs.splice(i,1);
+
+      continue;
+    }
+
+    /* REMOVE */
+
+    if(o.z > 1.1){
+
+      orbs.splice(i,1);
+    }
+  }
+
+  /* =========================
+     UPDATE SIGNS
+     ========================= */
+
+  for(
+    let i=signs.length-1;
+    i>=0;
+    i--
+  ){
+
+    signs[i].z +=
+      .00045*dt;
+
+    if(
+      signs[i].z > 1.1
+    ){
+
+      signs.splice(i,1);
+    }
+  }
+
+  /* =========================
+     UPDATE PARTICLES
+     ========================= */
+
+  for(
+    let i=particles.length-1;
+    i>=0;
+    i--
+  ){
+
+    const p =
+      particles[i];
+
+    p.x +=
+      p.vx*dt;
+
+    p.y +=
+      p.vy*dt;
+
+    p.vy +=
+      .0004*dt;
+
+    p.life -= dt;
+
+    if(
+      p.life <= 0
+    ){
+
+      particles.splice(i,1);
+    }
+  }
+
+  /* =========================
+     SCREEN EFFECTS
+     ========================= */
+
+  shake *= .90;
+
+  flash *= .90;
+
+  /* =========================
+     RUNNER TRAIL
+     ========================= */
+
+  if(
+    Math.random() < .65
+  ){
+
+    const px =
+      laneX(player.lane);
+
+    const py =
+      H*.82 -
+      player.y*H*.28;
+
+    particles.push({
+
+      x:px+
+        rand(-8,8),
+
+      y:py+
+        rand(10,25),
+
+      vx:rand(-.03,.03),
+
+      vy:rand(.01,.05),
+
+      life:rand(200,500),
+
+      maxLife:500,
+
+      size:rand(2,5),
+
+      type:"trail"
+    });
+  }
+
+  updateHUD();
+}
+
+
+/* =========================================================
+   OBSTACLE COLLISION
+   ========================================================= */
+
+function checkObstacle(o){
+
+  if(o.hit)
+    return;
+
+  if(
+    Math.abs(o.z-.83)<.065 &&
+    Math.abs(o.lane-player.lane)<.34
+  ){
+
+    /* JUMP OVER NORMAL OBSTACLES */
+
+    const jumpingHigh =
+      player.y > .55;
+
+    if(
+      o.type === "laser" &&
+      jumpingHigh
+    ){
+
+      return;
+    }
+
+    if(
+      jumpingHigh &&
+      (
+        o.type === "barrier" ||
+        o.type === "car" ||
+        o.type === "crate" ||
+        o.type === "truck"
+      )
+    ){
+
+      return;
+    }
+
+    o.hit = true;
+
+    /* SHIELD */
+
+    if(
+      player.shield > 0
+    ){
+
+      player.shield = 0;
+
+      shake = 12;
+
+      burst(
+        laneX(player.lane),
+        H*.76,
+        22
+      );
+
+      showMessage(
+        "SHIELD SAVED YOU!"
+      );
+
+      return;
+    }
+
+    /* DAMAGE */
+
+    energy -= 25;
+
+    shake = 18;
+
+    flash = .4;
+
+    burst(
+      laneX(player.lane),
+      H*.74,
+      30
+    );
+
+    showMessage(
+      "-25 ENERGY"
+    );
+
+    if(
+      energy <= 0
+    ){
+
+      energy = 0;
+
+      gameOver();
+    }
+  }
+}
+
+
+/* =========================================================
+   COLLECT ENERGY ORB
+   ========================================================= */
+
+function collectOrb(){
+
+  collected++;
+
+  score += 35;
+
+  energy =
+    Math.min(
+      100,
+      energy+4
+    );
+
+  burst(
+    laneX(player.lane),
+    H*.75,
+    12
+  );
+
+  /* EVERY 10 ORBS = SHIELD */
+
+  if(
+    collected % 10 === 0
+  ){
+
+    player.shield =
+      5000;
+
+    showMessage(
+      "SHIELD READY!"
+    );
+  }
+}
+
+
+/* =========================================================
+   PARTICLE BURST
+   ========================================================= */
+
+function burst(
+  x,
+  y,
+  count
+){
+
+  for(
+    let i=0;
+    i<count;
+    i++
+  ){
+
+    const angle =
+      Math.random()*
+      Math.PI*2;
+
+    const speed =
+      rand(.03,.16);
+
+    particles.push({
+
+      x:x,
+
+      y:y,
+
+      vx:
+        Math.cos(angle)*
+        speed,
+
+      vy:
+        Math.sin(angle)*
+        speed,
+
+      life:
+        rand(300,900),
+
+      maxLife:900,
+
+      size:
+        rand(2,7),
+
+      type:"burst"
+    });
+  }
+}
+
+
+/* =========================================================
+   MAIN DRAW
+   ========================================================= */
+
+function draw(){
+
+  ctx.save();
+
+  /* CAMERA SHAKE */
+
+  if(
+    shake > 1
+  ){
+
+    ctx.translate(
+      rand(-shake,shake),
+      rand(-shake,shake)
+    );
+  }
+
+  drawSky();
+
+  drawStars();
+
+  drawCity();
+
+  drawRoad();
+
+  drawSigns();
+
+  drawOrbs();
+
+  drawObstacles();
+
+  drawPlayer();
+
+  drawParticles();
+
+  /* DAMAGE FLASH */
+
+  if(
+    flash > 0
+  ){
+
+    ctx.fillStyle =
+      `rgba(255,80,130,${flash*.25})`;
+
+    ctx.fillRect(
+      0,
+      0,
+      W,
+      H
+    );
+  }
+
+  ctx.restore();
+}
+
+
+/* =========================================================
+   SKY
+   ========================================================= */
+
+function drawSky(){
+
+  const w =
+    currentWorld();
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      H
+    );
+
+  gradient.addColorStop(
+    0,
+    w.sky1
+  );
+
+  gradient.addColorStop(
+    .55,
+    w.sky2
+  );
+
+  gradient.addColorStop(
+    1,
+    w.ground
+  );
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+  /* MOON / NEON SUN */
+
+  const moonX =
+    W*.76;
+
+  const moonY =
+    H*.20;
+
+  const moonR =
+    Math.min(W,H)*.08;
+
+  const glow =
+    ctx.createRadialGradient(
+      moonX,
+      moonY,
+      0,
+      moonX,
+      moonY,
+      moonR*2.2
+    );
+
+  glow.addColorStop(
+    0,
+    "rgba(180,120,255,.45)"
+  );
+
+  glow.addColorStop(
+    .3,
+    "rgba(80,120,255,.12)"
+  );
+
+  glow.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle =
+    glow;
+
+  ctx.fillRect(
+    moonX-moonR*2.2,
+    moonY-moonR*2.2,
+    moonR*4.4,
+    moonR*4.4
+  );
+
+  ctx.beginPath();
+
+  ctx.arc(
+    moonX,
+    moonY,
+    moonR*.55,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fillStyle =
+    "rgba(220,225,255,.75)";
+
+  ctx.fill();
+}
+
+
+/* =========================================================
+   STARS
+   ========================================================= */
+
+function drawStars(){
+
+  for(
+    const s of stars
+  ){
+
+    const x =
+      s.x*W;
+
+    const y =
+      (
+        (
+          s.y+
+          roadScroll*
+          s.speed*.2
+        )%1
+      )*
+      H*.45;
+
+    const alpha =
+      .15+
+      s.z*.55;
+
+    ctx.globalAlpha =
+      alpha;
+
+    ctx.fillStyle =
+      "#b9eaff";
+
+    ctx.fillRect(
+      x,
+      y,
+      s.size,
+      s.size
+    );
+  }
+
+  ctx.globalAlpha = 1;
+}
+
+
+/* =========================================================
+   FUTURISTIC CITY
+   ========================================================= */
+
+function drawCity(){
+
+  const horizon =
+    H*.41;
+
+  for(
+    const b of buildings
+  ){
+
+    const z =
+      (
+        b.z+
+        roadScroll*.13
+      )%1;
+
+    const scale =
+      .25+
+      z*1.1;
+
+    const height =
+      b.height*scale;
+
+    const width =
+      b.width*scale;
+
+    const sideX =
+      b.side < 0
+      ?
+      W*.5-W*.15-width
+      :
+      W*.5+W*.15;
+
+    const x =
+      sideX+
+      b.x*
+      (
+        b.side<0
+        ? W*.1
+        : W*.1
+      );
+
+    const y =
+      horizon-height;
+
+    /* BUILDING */
+
+    ctx.fillStyle =
+      "rgba(8,12,30,.9)";
+
+    ctx.fillRect(
+      x,
+      y,
+      width,
+      height
+    );
+
+    /* ROOFLIGHT */
+
+    ctx.fillStyle =
+      currentWorld().accent;
+
+    ctx.globalAlpha =
+      .12;
+
+    ctx.fillRect(
+      x,
+      y,
+      width,
+      3
+    );
+
+    ctx.globalAlpha = 1;
+
+    /* WINDOWS */
+
+    const rows =
+      Math.max(
+        2,
+        Math.floor(height/25)
+      );
+
+    const cols =
+      Math.max(
+        1,
+        Math.floor(width/20)
+      );
+
+    for(
+      let row=0;
+      row<rows;
+      row++
+    ){
+
+      for(
+        let col=0;
+        col<cols;
+        col++
+      ){
+
+        if(
+          Math.random()>.72
+        )
+          continue;
+
+        const wx =
+          x+7+
+          col*20;
+
+        const wy =
+          y+10+
+          row*25;
+
+        if(
+          wx+5 < x+width &&
+          wy+7 < y+height
+        ){
+
+          ctx.globalAlpha =
+            .25+
+            z*.5;
+
+          ctx.fillStyle =
+            row%3===0
+            ?
+            currentWorld().glow
+            :
+            "#b65cff";
+
+          ctx.fillRect(
+            wx,
+            wy,
+            5,
+            8
+          );
+        }
+      }
+    }
+
+    ctx.globalAlpha = 1;
+  }
+}
+
+
+/* =========================================================
+   PREMIUM 3D ROAD
+   ========================================================= */
+
+function drawRoad(){
+
+  const horizon =
+    H*.405;
+
+  const bottom =
+    H*1.12;
+
+  /* GROUND */
+
+  ctx.fillStyle =
+    currentWorld().ground;
+
+  ctx.fillRect(
+    0,
+    horizon,
+    W,
+    H-horizon
+  );
+
+  /* ROAD */
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    W*.43,
+    horizon
+  );
+
+  ctx.lineTo(
+    W*.57,
+    horizon
+  );
+
+  ctx.lineTo(
+    W*.92,
+    bottom
+  );
+
+  ctx.lineTo(
+    W*.08,
+    bottom
+  );
+
+  ctx.closePath();
+
+  ctx.fillStyle =
+    currentWorld().road;
+
+  ctx.fill();
+
+  /* ROAD EDGES */
+
+  ctx.strokeStyle =
+    currentWorld().glow;
+
+  ctx.lineWidth = 3;
+
+  ctx.shadowBlur = 18;
+
+  ctx.shadowColor =
+    currentWorld().glow;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    W*.43,
+    horizon
+  );
+
+  ctx.lineTo(
+    W*.08,
+    bottom
+  );
+
+  ctx.stroke();
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    W*.57,
+    horizon
+  );
+
+  ctx.lineTo(
+    W*.92,
+    bottom
+  );
+
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+
+  /* LANE MARKINGS */
+
+  for(
+    let laneLine=1;
+    laneLine<=2;
+    laneLine++
+  ){
+
+    const topX =
+      W*.43+
+      laneLine*.14;
+
+    const bottomX =
+      W*.08+
+      laneLine*
+      (W*.84/3);
+
+    for(
+      let i=0;
+      i<18;
+      i++
+    ){
+
+      const z =
+        (
+          i/18+
+          roadScroll*2
+        )%1;
+
+      const y =
+        horizon+
+        Math.pow(z,1.8)*
+        (bottom-horizon);
+
+      const x =
+        topX+
+        (bottomX-topX)*
+        Math.pow(z,1.8);
+
+      const length =
+        5+
+        z*65;
+
+      const width =
+        2+
+        z*5;
+
+      ctx.globalAlpha =
+        .25+
+        z*.75;
+
+      ctx.fillStyle =
+        "#b9f8ff";
+
+      ctx.fillRect(
+        x-width/2,
+        y,
+        width,
+        length
+      );
+    }
+  }
+
+  ctx.globalAlpha=1;
+
+  /* ROAD GRID */
+
+  for(
+    let i=0;
+    i<14;
+    i++
+  ){
+
+    const z =
+      (
+        i/14+
+        roadScroll*.8
+      )%1;
+
+    const y =
+      horizon+
+      Math.pow(z,1.8)*
+      (bottom-horizon);
+
+    const left =
+      W*.43+
+      (W*.08-W*.43)*
+      Math.pow(z,1.8);
+
+    const right =
+      W*.57+
+      (W*.92-W*.57)*
+      Math.pow(z,1.8);
+
+    ctx.globalAlpha =
+      .12+
+      z*.2;
+
+    ctx.strokeStyle =
+      currentWorld().accent;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      left,
+      y
+    );
+
+    ctx.lineTo(
+      right,
+      y
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.globalAlpha=1;
+
+  /* SIDE LIGHTS */
+
+  for(
+    let i=0;
+    i<16;
+    i++
+  ){
+
+    const z =
+      (
+        i/16+
+        roadScroll
+      )%1;
+
+    const y =
+      horizon+
+      Math.pow(z,1.8)*
+      (bottom-horizon);
+
+    const leftX =
+      W*.43+
+      (W*.08-W*.43)*
+      Math.pow(z,1.8);
+
+    const rightX =
+      W*.57+
+      (W*.92-W*.57)*
+      Math.pow(z,1.8);
+
+    const size =
+      2+
+      z*7;
+
+    ctx.fillStyle =
+      currentWorld().glow;
+
+    ctx.shadowBlur =
+      15*z;
+
+    ctx.shadowColor =
+      currentWorld().glow;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      leftX,
+      y,
+      size,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.beginPath();
+
+    ctx.arc(
+      rightX,
+      y,
+      size,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.shadowBlur=0;
+}
+
+
+/* =========================================================
+   NEON BOARDS
+   ========================================================= */
+
+function drawSigns(){
+
+  for(
+    const s of signs
+  ){
+
+    const z =
+      s.z;
+
+    const y =
+      H*.36+
+      Math.pow(z,1.7)*
+      H*.42;
+
+    const scale =
+      .15+
+      z;
+
+    const x =
+      s.side<0
+      ?
+      W*.18-z*W*.08
+      :
+      W*.82+z*W*.08;
+
+    ctx.save();
+
+    ctx.translate(
+      x,
+      y
+    );
+
+    ctx.scale(
+      scale,
+      scale
+    );
+
+    ctx.shadowBlur=20;
+
+    ctx.shadowColor =
+      currentWorld().glow;
+
+    ctx.fillStyle =
+      "rgba(5,8,25,.8)";
+
+    ctx.strokeStyle =
+      currentWorld().glow;
+
+    ctx.lineWidth=2;
+
+    ctx.fillRect(
+      -55,
+      -18,
+      110,
+      36
+    );
+
+    ctx.strokeRect(
+      -55,
+      -18,
+      110,
+      36
+    );
+
+    ctx.shadowBlur=0;
+
+    ctx.fillStyle="#fff";
+
+    ctx.font =
+      "bold 11px Arial";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillText(
+      s.text,
+      0,
+      4
+    );
+
+    ctx.restore();
+  }
+}
+
+
+/* =========================================================
+   ENERGY ORBS
+   ========================================================= */
+
+function drawOrbs(){
+
+  for(
+    const o of orbs
+  ){
+
+    const z =
+      o.z;
+
+    const x =
+      laneX(o.lane);
+
+    const y =
+      depthY(z)-20*z;
+
+    const r =
+      7+z*14;
+
+    ctx.save();
+
+    ctx.translate(
+      x,
+      y
+    );
+
+    ctx.rotate(
+      o.spin
+    );
+
+    ctx.shadowBlur=25;
+
+    ctx.shadowColor =
+      "#ffe45a";
+
+    ctx.strokeStyle =
+      "#ffe45a";
+
+    ctx.lineWidth =
+      Math.max(
+        1,
+        2*z
+      );
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      0,
+      r,
+      0,
+      Math.PI*2
+    );
+
+    ctx.stroke();
+
+    ctx.fillStyle =
+      "rgba(255,226,80,.7)";
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      0,
+      -r*.7
+    );
+
+    ctx.lineTo(
+      r*.7,
+      0
+    );
+
+    ctx.lineTo(
+      0,
+      r*.7
+    );
+
+    ctx.lineTo(
+      -r*.7,
+      0
+    );
+
+    ctx.closePath();
+
+    ctx.fill();
+
+    ctx.restore();
+  }
+}
+
+
+/* =========================================================
+   OBSTACLES
+   ========================================================= */
+
+function drawObstacles(){
+
+  for(
+    const o of obstacles
+  ){
+
+    const z =
+      o.z;
+
+    const x =
+      laneX(o.lane);
+
+    const y =
+      depthY(z);
+
+    const scale =
+      depthScale(z);
+
+    ctx.save();
+
+    ctx.translate(
+      x,
+      y
+    );
+
+    ctx.scale(
+      scale,
+      scale
+    );
+
+    if(
+      o.type==="car"
+    ){
+
+      drawCar();
+
+    }
+    else if(
+      o.type==="truck"
+    ){
+
+      drawTruck();
+
+    }
+    else if(
+      o.type==="crate"
+    ){
+
+      drawCrate();
+
+    }
+    else if(
+      o.type==="laser"
+    ){
+
+      drawLaser();
+
+    }
+    else{
+
+      drawBarrier();
+    }
+
+    ctx.restore();
+  }
+}
+
+
+/* =========================================================
+   CAR
+   ========================================================= */
+
+function drawCar(){
+
+  ctx.shadowBlur=18;
+
+  ctx.shadowColor =
+    "#ff315f";
+
+  ctx.fillStyle =
+    "#14182b";
+
+  roundRect(
+    -30,
+    -45,
+    60,
+    55,
+    12
+  );
+
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle =
+    "#242d4b";
+
+  roundRect(
+    -22,
+    -38,
+    44,
+    20,
+    7
+  );
+
+  ctx.fill();
+
+  ctx.fillStyle =
+    "#77edff";
+
+  ctx.fillRect(
+    -18,
+    -34,
+    36,
+    11
+  );
+
+  ctx.fillStyle =
+    "#ff2b5f";
+
+  ctx.fillRect(
+    -25,
+    0,
+    12,
+    7
+  );
+
+  ctx.fillRect(
+    13,
+    0,
+    12,
+    7
+  );
+
+  drawWheel(
+    -23,
+    7
+  );
+
+  drawWheel(
+    23,
+    7
+  );
+}
+
+
+/* =========================================================
+   TRUCK
+   ========================================================= */
+
+function drawTruck(){
+
+  ctx.shadowBlur=18;
+
+  ctx.shadowColor =
+    "#ff9d32";
+
+  ctx.fillStyle =
+    "#202438";
+
+  roundRect(
+    -34,
+    -70,
+    68,
+    82,
+    8
+  );
+
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle =
+    "#ff9d32";
+
+  ctx.fillRect(
+    -28,
+    -63,
+    56,
+    5
+  );
+
+  ctx.fillStyle =
+    "#86eaff";
+
+  ctx.fillRect(
+    -22,
+    -50,
+    44,
+    20
+  );
+
+  drawWheel(
+    -27,
+    8
+  );
+
+  drawWheel(
+    27,
+    8
+  );
+}
+
+
+/* =========================================================
+   CRATE
+   ========================================================= */
+
+function drawCrate(){
+
+  ctx.shadowBlur=16;
+
+  ctx.shadowColor =
+    "#ffba36";
+
+  ctx.fillStyle =
+    "#bd6c2d";
+
+  ctx.fillRect(
+    -28,
+    -35,
+    56,
+    55
+  );
+
+  ctx.shadowBlur=0;
+
+  ctx.strokeStyle =
+    "#ffd070";
+
+  ctx.lineWidth=4;
+
+  ctx.strokeRect(
+    -28,
+    -35,
+    56,
+    55
+  );
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -28,
+    -35
+  );
+
+  ctx.lineTo(
+    28,
+    20
+  );
+
+  ctx.moveTo(
+    28,
+    -35
+  );
+
+  ctx.lineTo(
+    -28,
+    20
+  );
+
+  ctx.stroke();
+}
+
+
+/* =========================================================
+   BARRIER
+   ========================================================= */
+
+function drawBarrier(){
+
+  ctx.shadowBlur=20;
+
+  ctx.shadowColor =
+    "#ff3f6d";
+
+  ctx.fillStyle =
+    "#15182a";
+
+  roundRect(
+    -38,
+    -30,
+    76,
+    38,
+    8
+  );
+
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+
+  ctx.strokeStyle =
+    "#ff416c";
+
+  ctx.lineWidth=4;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -30,
+    -20
+  );
+
+  ctx.lineTo(
+    -15,
+    -2
+  );
+
+  ctx.moveTo(
+    -5,
+    -20
+  );
+
+  ctx.lineTo(
+    10,
+    -2
+  );
+
+  ctx.moveTo(
+    20,
+    -20
+  );
+
+  ctx.lineTo(
+    35,
+    -2
+  );
+
+  ctx.stroke();
+}
+
+
+/* =========================================================
+   LASER
+   ========================================================= */
+
+function drawLaser(){
+
+  ctx.shadowBlur=25;
+
+  ctx.shadowColor =
+    "#ff1aff";
+
+  ctx.fillStyle =
+    "#24203d";
+
+  ctx.fillRect(
+    -42,
+    -65,
+    8,
+    75
+  );
+
+  ctx.fillRect(
+    34,
+    -65,
+    8,
+    75
+  );
+
+  ctx.strokeStyle =
+    "#ff2cff";
+
+  ctx.lineWidth=5;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -38,
+    -50
+  );
+
+  ctx.lineTo(
+    38,
+    -50
+  );
+
+  ctx.stroke();
+
+  ctx.shadowBlur=0;
+}
+
+
+/* =========================================================
+   WHEEL
+   ========================================================= */
+
+function drawWheel(
+  x,
+  y
+){
+
+  ctx.fillStyle =
+    "#05060b";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    8,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.strokeStyle =
+    "#6170a0";
+
+  ctx.stroke();
+}
+
+
+/* =========================================================
+   HUMAN RUNNER
+   ========================================================= */
+
+function drawPlayer(){
+
+  const x =
+    laneX(player.lane);
+
+  const groundY =
+    H*.80;
+
+  const jumpOffset =
+    player.y*H*.28;
+
+  const y =
+    groundY-jumpOffset;
+
+  const run =
+    Math.sin(
+      player.anim
+    );
+
+  const c =
+    characters[
+      selectedCharacter
+    ];
+
+  ctx.save();
+
+  ctx.translate(
+    x,
+    y
+  );
+
+  /* SHADOW */
+
+  const shadowSize =
+    Math.max(
+      8,
+      30-player.y*25
+    );
+
+  ctx.globalAlpha=.35;
+
+  ctx.fillStyle="#000";
+
+  ctx.beginPath();
+
+  ctx.ellipse(
+    0,
+    9,
+    shadowSize,
+    shadowSize*.35,
+    0,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.globalAlpha=1;
+
+  /* SHIELD */
+
+  if(
+    player.shield>0
+  ){
+
+    ctx.shadowBlur=30;
+
+    ctx.shadowColor =
+      "#00eaff";
+
+    ctx.strokeStyle =
+      "rgba(0,230,255,.8)";
+
+    ctx.lineWidth=3;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      -48,
+      42+
+      Math.sin(
+        performance.now()*.006
+      )*4,
+      0,
+      Math.PI*2
+    );
+
+    ctx.stroke();
+  }
+
+  /* BOOST TRAIL */
+
+  if(
+    player.boost>0
+  ){
+
+    ctx.globalAlpha=.5;
+
+    for(
+      let i=0;
+      i<5;
+      i++
+    ){
+
+      ctx.fillStyle =
+        i%2
+        ?
+        "#8d4dff"
+        :
+        "#00eaff";
+
+      ctx.fillRect(
+        -25-i*12,
+        -20+
+        Math.sin(
+          player.anim+i
+        )*8,
+        30,
+        3
+      );
+    }
+
+    ctx.globalAlpha=1;
+  }
+
+  /* LEGS */
+
+  const legA =
+    run*.55;
+
+  const legB =
+    -run*.55;
+
+  ctx.lineCap =
+    "round";
+
+  ctx.strokeStyle =
+    c.pants;
+
+  ctx.lineWidth=10;
+
+  /* BACK LEG */
+
+  ct
