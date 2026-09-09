@@ -2944,3 +2944,555 @@ function updateHUD() {
       ) + "%";
   }
       }
+      <!-- =========================================
+     GAME CONTROL FUNCTIONS
+========================================= -->
+
+<script>
+
+// =========================================
+// GAME OVER
+// =========================================
+
+function gameOver() {
+
+  gameRunning = false;
+  gamePaused = false;
+
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+
+  if (score > bestScore) {
+
+    bestScore = Math.floor(score);
+
+    localStorage.setItem(
+      "neonEscapeBest",
+      bestScore
+    );
+  }
+
+  if (finalScoreElement) {
+    finalScoreElement.textContent =
+      Math.floor(score);
+  }
+
+  if (bestScoreElement) {
+    bestScoreElement.textContent =
+      bestScore;
+  }
+
+  if (gameOverScreen) {
+    gameOverScreen.classList.add("show");
+  }
+
+  if (pauseScreen) {
+    pauseScreen.classList.remove("show");
+  }
+}
+
+
+// =========================================
+// START GAME
+// =========================================
+
+function startGame() {
+
+  if (gameRunning) {
+    return;
+  }
+
+  gameRunning = true;
+  gamePaused = false;
+
+  score = 0;
+  level = 1;
+  energy = 100;
+
+  obstacleTimer = 0;
+  orbTimer = 0;
+
+  screenShake = 0;
+  screenFlash = 0;
+
+  obstacles.length = 0;
+  energyOrbs.length = 0;
+  particles.length = 0;
+  floatingTexts.length = 0;
+  playerTrail.length = 0;
+
+  player.lane = 1;
+  player.targetLane = 1;
+  player.jump = 0;
+  player.jumpVelocity = 0;
+  player.invincible = false;
+  player.invincibleTimer = 0;
+
+  if (startScreen) {
+    startScreen.classList.remove("show");
+  }
+
+  if (gameOverScreen) {
+    gameOverScreen.classList.remove("show");
+  }
+
+  if (pauseScreen) {
+    pauseScreen.classList.remove("show");
+  }
+
+  lastTime = performance.now();
+
+  animationId =
+    requestAnimationFrame(gameLoop);
+}
+
+
+// =========================================
+// PAUSE GAME
+// =========================================
+
+function togglePause() {
+
+  if (!gameRunning) {
+    return;
+  }
+
+  gamePaused = !gamePaused;
+
+  if (gamePaused) {
+
+    if (pauseScreen) {
+      pauseScreen.classList.add("show");
+    }
+
+  } else {
+
+    if (pauseScreen) {
+      pauseScreen.classList.remove("show");
+    }
+
+    lastTime = performance.now();
+
+    animationId =
+      requestAnimationFrame(gameLoop);
+  }
+}
+
+
+// =========================================
+// RESTART
+// =========================================
+
+function restartGame() {
+
+  if (animationId) {
+
+    cancelAnimationFrame(
+      animationId
+    );
+
+    animationId = null;
+  }
+
+  gameRunning = false;
+  gamePaused = false;
+
+  startGame();
+}
+
+
+// =========================================
+// PLAYER MOVEMENT
+// =========================================
+
+function moveLeft() {
+
+  if (!gameRunning || gamePaused) {
+    return;
+  }
+
+  player.targetLane--;
+
+  if (player.targetLane < 0) {
+    player.targetLane = 0;
+  }
+}
+
+
+function moveRight() {
+
+  if (!gameRunning || gamePaused) {
+    return;
+  }
+
+  player.targetLane++;
+
+  if (player.targetLane > 2) {
+    player.targetLane = 2;
+  }
+}
+
+
+// =========================================
+// JUMP
+// =========================================
+
+function jumpPlayer() {
+
+  if (!gameRunning || gamePaused) {
+    return;
+  }
+
+  if (player.jump <= 0.01) {
+
+    player.jumpVelocity =
+      -12;
+
+    player.jump = 0.01;
+
+    createExplosion(
+      playerX,
+      playerY + 20,
+      "#00f7ff",
+      8
+    );
+  }
+}
+
+
+// =========================================
+// KEYBOARD CONTROLS
+// =========================================
+
+window.addEventListener(
+  "keydown",
+  function(event) {
+
+    const key =
+      event.key.toLowerCase();
+
+    if (
+      key === "arrowleft" ||
+      key === "a"
+    ) {
+
+      event.preventDefault();
+
+      moveLeft();
+
+      return;
+    }
+
+    if (
+      key === "arrowright" ||
+      key === "d"
+    ) {
+
+      event.preventDefault();
+
+      moveRight();
+
+      return;
+    }
+
+    if (
+      key === "arrowup" ||
+      key === "w" ||
+      key === " "
+    ) {
+
+      event.preventDefault();
+
+      jumpPlayer();
+
+      return;
+    }
+
+    if (
+      key === "p" ||
+      key === "escape"
+    ) {
+
+      event.preventDefault();
+
+      togglePause();
+    }
+  },
+  { passive: false }
+);
+
+
+// =========================================
+// TOUCH BUTTONS
+// =========================================
+
+if (leftButton) {
+
+  leftButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      moveLeft();
+    }
+  );
+}
+
+
+if (rightButton) {
+
+  rightButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      moveRight();
+    }
+  );
+}
+
+
+if (jumpButton) {
+
+  jumpButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      jumpPlayer();
+    }
+  );
+}
+
+
+if (pauseButton) {
+
+  pauseButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      togglePause();
+    }
+  );
+}
+
+
+if (startButton) {
+
+  startButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      startGame();
+    }
+  );
+}
+
+
+if (restartButton) {
+
+  restartButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      restartGame();
+    }
+  );
+}
+
+
+if (resumeButton) {
+
+  resumeButton.addEventListener(
+    "pointerdown",
+    function(event) {
+
+      event.preventDefault();
+
+      togglePause();
+    }
+  );
+}
+
+
+// =========================================
+// SWIPE CONTROLS
+// =========================================
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+canvas.addEventListener(
+  "touchstart",
+  function(event) {
+
+    if (
+      !event.touches ||
+      event.touches.length === 0
+    ) {
+      return;
+    }
+
+    touchStartX =
+      event.touches[0].clientX;
+
+    touchStartY =
+      event.touches[0].clientY;
+
+  },
+  { passive: true }
+);
+
+
+canvas.addEventListener(
+  "touchend",
+  function(event) {
+
+    if (
+      !event.changedTouches ||
+      event.changedTouches.length === 0
+    ) {
+      return;
+    }
+
+    const endX =
+      event.changedTouches[0].clientX;
+
+    const endY =
+      event.changedTouches[0].clientY;
+
+    const dx =
+      endX - touchStartX;
+
+    const dy =
+      endY - touchStartY;
+
+
+    if (
+      Math.abs(dx) >
+      Math.abs(dy)
+    ) {
+
+      if (Math.abs(dx) > 35) {
+
+        if (dx < 0) {
+          moveLeft();
+        } else {
+          moveRight();
+        }
+      }
+
+    } else {
+
+      if (dy < -35) {
+        jumpPlayer();
+      }
+    }
+
+  },
+  { passive: true }
+);
+
+
+// =========================================
+// RESIZE
+// =========================================
+
+window.addEventListener(
+  "resize",
+  function() {
+
+    resizeCanvas();
+
+    updateHUD();
+  }
+);
+
+
+// =========================================
+// PREVENT PAGE SCROLL
+// =========================================
+
+document.addEventListener(
+  "touchmove",
+  function(event) {
+
+    if (
+      event.target === canvas ||
+      event.target.closest(".controls")
+    ) {
+
+      event.preventDefault();
+    }
+
+  },
+  { passive: false }
+);
+
+
+// =========================================
+// VISIBILITY
+// =========================================
+
+document.addEventListener(
+  "visibilitychange",
+  function() {
+
+    if (
+      document.hidden &&
+      gameRunning &&
+      !gamePaused
+    ) {
+
+      togglePause();
+    }
+  }
+);
+
+
+// =========================================
+// INITIAL SETUP
+// =========================================
+
+resizeCanvas();
+
+bestScore =
+  Number(
+    localStorage.getItem(
+      "neonEscapeBest"
+    ) || 0
+  );
+
+updateHUD();
+
+
+// =========================================
+// INITIAL DRAW
+// =========================================
+
+draw();
+
+
+// =========================================
+// SHOW START SCREEN
+// =========================================
+
+if (startScreen) {
+  startScreen.classList.add("show");
+}
+
+</script>
+
+</body>
+</html>
