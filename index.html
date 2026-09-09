@@ -1,246 +1,1556 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0,
-                   maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+               maximum-scale=1.0,user-scalable=no">
+<title>NEON ESCAPE - The Last Survivor</title>
 
-    <title>NEON ESCAPE</title>
+<style>
+*{
+  box-sizing:border-box;
+  -webkit-tap-highlight-color:transparent;
+}
 
-    <link rel="stylesheet" href="style.css">
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  background:#02030b;
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+  user-select:none;
+}
+
+body{
+  touch-action:none;
+}
+
+canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+}
+
+#ui{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+
+.hud{
+  position:absolute;
+  top:12px;
+  left:12px;
+  right:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:8px;
+}
+
+.panel{
+  min-width:82px;
+  padding:8px 11px;
+  border:1px solid rgba(80,220,255,.35);
+  border-radius:12px;
+  background:rgba(3,7,24,.72);
+  box-shadow:0 0 18px rgba(0,220,255,.12);
+  backdrop-filter:blur(8px);
+}
+
+.label{
+  font-size:8px;
+  letter-spacing:2px;
+  color:#72eaff;
+}
+
+.value{
+  margin-top:2px;
+  font-size:18px;
+  font-weight:900;
+  text-shadow:0 0 10px #00eaff;
+}
+
+.energy{
+  width:125px;
+}
+
+.bar{
+  width:100%;
+  height:7px;
+  margin-top:6px;
+  overflow:hidden;
+  border-radius:10px;
+  background:#14182d;
+}
+
+#energyBar{
+  width:100%;
+  height:100%;
+  background:linear-gradient(
+    90deg,
+    #00eaff,
+    #7655ff
+  );
+  box-shadow:0 0 12px #00eaff;
+}
+
+button{
+  font-family:Arial,Helvetica,sans-serif;
+  color:white;
+  cursor:pointer;
+  user-select:none;
+}
+
+.primary{
+  width:100%;
+  padding:16px;
+  border:0;
+  border-radius:14px;
+  background:linear-gradient(
+    100deg,
+    #00cfff,
+    #7554ff
+  );
+  box-shadow:0 0 28px rgba(0,210,255,.32);
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+
+.primary:active{
+  transform:scale(.97);
+}
+
+.secondary{
+  padding:10px 14px;
+  border:1px solid rgba(110,220,255,.3);
+  border-radius:10px;
+  background:rgba(12,18,45,.86);
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:1px;
+}
+
+.hidden{
+  display:none!important;
+}
+
+.center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:auto;
+}
+
+.card{
+  width:min(92vw,470px);
+  padding:30px 24px;
+  text-align:center;
+  border:1px solid rgba(100,225,255,.4);
+  border-radius:25px;
+  background:rgba(3,7,25,.86);
+  box-shadow:
+    0 0 55px rgba(0,200,255,.17),
+    inset 0 0 35px rgba(100,40,255,.08);
+  backdrop-filter:blur(13px);
+}
+
+.logo{
+  font-size:clamp(38px,11vw,65px);
+  font-weight:900;
+  letter-spacing:5px;
+  text-shadow:
+    0 0 8px #00eaff,
+    0 0 28px #765cff;
+}
+
+.subtitle{
+  margin-top:4px;
+  margin-bottom:22px;
+  color:#7cecff;
+  font-size:10px;
+  letter-spacing:4px;
+}
+
+.card p{
+  color:#abb9d5;
+  font-size:13px;
+  line-height:1.6;
+}
+
+#pauseBtn{
+  position:absolute;
+  right:12px;
+  top:78px;
+  pointer-events:auto;
+}
+
+.controls{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:18px;
+  display:flex;
+  justify-content:space-between;
+  padding:0 18px;
+}
+
+.group{
+  display:flex;
+  gap:12px;
+}
+
+.ctrl{
+  width:62px;
+  height:62px;
+  border:1px solid rgba(100,225,255,.35);
+  border-radius:50%;
+  background:rgba(7,13,40,.72);
+  box-shadow:0 0 20px rgba(0,210,255,.12);
+  font-size:24px;
+  font-weight:900;
+  pointer-events:auto;
+}
+
+.ctrl:active{
+  transform:scale(.9);
+  background:rgba(35,45,85,.9);
+}
+
+#toast{
+  position:absolute;
+  top:27%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  opacity:0;
+  white-space:nowrap;
+  color:white;
+  font-size:21px;
+  font-weight:900;
+  letter-spacing:3px;
+  text-shadow:
+    0 0 8px #00eaff,
+    0 0 18px #765cff;
+  transition:opacity .2s;
+}
+
+.smallText{
+  color:#64738d!important;
+  font-size:10px!important;
+}
+
+@media(max-height:600px){
+
+  .hud{
+    top:7px;
+  }
+
+  .panel{
+    padding:5px 9px;
+  }
+
+  .controls{
+    bottom:8px;
+  }
+
+  .ctrl{
+    width:52px;
+    height:52px;
+  }
+
+  .card{
+    padding:22px;
+  }
+
+  .logo{
+    font-size:38px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<canvas id="gameCanvas"></canvas>
+<canvas id="game"></canvas>
 
-<!-- ================= HUD ================= -->
+<div id="ui">
 
-<div id="hud" class="hidden">
+  <!-- HUD -->
+  <div class="hud">
 
-    <div class="hud-left">
+    <div class="panel">
+      <div class="label">SCORE</div>
+      <div class="value" id="score">0</div>
+    </div>
 
-        <div class="hud-box">
-            <span>SCORE</span>
-            <strong id="score">000000</strong>
-        </div>
+    <div class="panel">
+      <div class="label">LEVEL</div>
+      <div class="value" id="level">1</div>
+    </div>
 
-        <div class="hud-box">
-            <span>BEST</span>
-            <strong id="best">000000</strong>
-        </div>
+    <div class="panel energy">
+      <div class="label">ENERGY</div>
+      <div class="bar">
+        <div id="energyBar"></div>
+      </div>
+    </div>
 
-        <div class="hud-box">
-            <span>LEVEL</span>
-            <strong id="level">01</strong>
-        </div>
+  </div>
+
+  <!-- PAUSE -->
+  <button
+    id="pauseBtn"
+    class="secondary hidden">
+    Ⅱ PAUSE
+  </button>
+
+  <!-- START SCREEN -->
+  <div id="menu" class="center">
+
+    <div class="card">
+
+      <div class="logo">NEON</div>
+
+      <div class="subtitle">
+        ESCAPE • THE LAST SURVIVOR
+      </div>
+
+      <p>
+        Run through the neon city.
+        Dodge barriers, collect energy
+        and survive as long as possible.
+      </p>
+
+      <button
+        id="startBtn"
+        class="primary">
+        START GAME
+      </button>
+
+      <p class="smallText">
+        ← → / A D = MOVE
+        <br>
+        SPACE / ▲ = JUMP
+      </p>
 
     </div>
 
-    <div class="hud-right">
+  </div>
 
-        <div class="energy-container">
+  <!-- PAUSE SCREEN -->
+  <div id="pauseScreen" class="center hidden">
 
-            <div class="energy-title">
-                <span>ENERGY</span>
-                <span id="energyText">100%</span>
-            </div>
+    <div class="card">
 
-            <div class="energy-background">
-                <div id="energyBar"></div>
-            </div>
+      <div
+        class="logo"
+        style="font-size:40px">
+        PAUSED
+      </div>
 
-        </div>
+      <p>
+        The city is waiting.
+      </p>
 
-        <div class="lives" id="lives">
-            ♥ ♥ ♥
-        </div>
+      <button
+        id="resumeBtn"
+        class="primary">
+        RESUME
+      </button>
 
-        <button id="pauseButton" class="pause-button">
-            ❚❚
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ================= START SCREEN ================= -->
-
-<div id="startScreen" class="screen">
-
-    <div class="menu-card">
-
-        <div class="small-title">
-            THE FUTURE IS COLLAPSING
-        </div>
-
-        <h1>
-            NEON<br>
-            <span>ESCAPE</span>
-        </h1>
-
-        <div class="line"></div>
-
-        <p class="tagline">
-            THE LAST SURVIVOR
-        </p>
-
-        <p class="description">
-            Run through the collapsing neon city.
-            Collect energy, dodge deadly barriers,
-            activate power-ups and survive as long as possible.
-        </p>
-
-        <div class="feature-row">
-
-            <div>
-                <b>⚡</b>
-                <span>ENERGY</span>
-            </div>
-
-            <div>
-                <b>◆</b>
-                <span>POWER</span>
-            </div>
-
-            <div>
-                <b>★</b>
-                <span>LEVELS</span>
-            </div>
-
-        </div>
-
-        <button id="startButton" class="main-button">
-            START ESCAPE
-        </button>
-
-        <p class="controls-info">
-            DESKTOP: ← → / A D / SPACE
-            <br>
-            MOBILE: TOUCH THE SCREEN
-        </p>
+      <button
+        id="pauseRestart"
+        class="secondary"
+        style="margin-top:10px">
+        RESTART
+      </button>
 
     </div>
 
-</div>
+  </div>
 
+  <!-- GAME OVER -->
+  <div id="gameOver" class="center hidden">
 
-<!-- ================= COUNTDOWN ================= -->
+    <div class="card">
 
-<div id="countdown" class="countdown hidden">
-    3
-</div>
+      <div
+        class="logo"
+        style="font-size:38px">
+        GAME OVER
+      </div>
 
+      <p>FINAL SCORE</p>
 
-<!-- ================= PAUSE ================= -->
+      <div
+        id="finalScore"
+        style="
+          font-size:43px;
+          font-weight:900;
+          text-shadow:0 0 20px #00eaff;
+        ">
+        0
+      </div>
 
-<div id="pauseScreen" class="screen hidden">
+      <p id="bestText">
+        BEST: 0
+      </p>
 
-    <div class="menu-card small-card">
-
-        <div class="small-title">
-            SYSTEM PAUSED
-        </div>
-
-        <h2>PAUSED</h2>
-
-        <p class="description">
-            The city is waiting...
-        </p>
-
-        <button id="resumeButton" class="main-button">
-            RESUME
-        </button>
-
-        <button id="pauseRestartButton" class="secondary-button">
-            RESTART
-        </button>
-
-    </div>
-
-</div>
-
-
-<!-- ================= GAME OVER ================= -->
-
-<div id="gameOverScreen" class="screen hidden">
-
-    <div class="menu-card">
-
-        <div class="small-title">
-            CONNECTION LOST
-        </div>
-
-        <h2>GAME OVER</h2>
-
-        <div class="line"></div>
-
-        <p class="final-label">
-            FINAL SCORE
-        </p>
-
-        <div id="finalScore" class="final-score">
-            000000
-        </div>
-
-        <div class="results">
-
-            <div>
-                <span>BEST</span>
-                <strong id="finalBest">000000</strong>
-            </div>
-
-            <div>
-                <span>LEVEL</span>
-                <strong id="finalLevel">01</strong>
-            </div>
-
-            <div>
-                <span>TIME</span>
-                <strong id="finalTime">00:00</strong>
-            </div>
-
-        </div>
-
-        <div id="newBest" class="new-best hidden">
-            ★ NEW HIGH SCORE ★
-        </div>
-
-        <button id="restartButton" class="main-button">
-            PLAY AGAIN
-        </button>
-
-        <button id="menuButton" class="secondary-button">
-            MAIN MENU
-        </button>
+      <button
+        id="restartBtn"
+        class="primary">
+        RUN AGAIN
+      </button>
 
     </div>
 
-</div>
+  </div>
 
+  <div id="toast"></div>
 
-<!-- ================= MOBILE CONTROLS ================= -->
+  <!-- MOBILE CONTROLS -->
+  <div class="controls">
 
-<div id="mobileControls" class="hidden">
+    <div class="group">
 
-    <button id="leftButton" class="control-button">
+      <button
+        class="ctrl"
+        id="leftBtn">
         ◀
-    </button>
+      </button>
 
-    <button id="jumpButton" class="control-button jump">
-        ▲
-    </button>
-
-    <button id="rightButton" class="control-button">
+      <button
+        class="ctrl"
+        id="rightBtn">
         ▶
-    </button>
+      </button>
+
+    </div>
+
+    <div class="group">
+
+      <button
+        class="ctrl"
+        id="jumpBtn">
+        ▲
+      </button>
+
+    </div>
+
+  </div>
 
 </div>
 
 
-<script src="game.js"></script>
+<script>
+"use strict";
 
-</body>
-</html>
+/* =========================================================
+   NEON ESCAPE
+   THE LAST SURVIVOR
+   Complete single-file game
+   ========================================================= */
+
+
+/* =========================================================
+   CANVAS
+   ========================================================= */
+
+const canvas =
+  document.getElementById("game");
+
+const ctx =
+  canvas.getContext("2d");
+
+let W = window.innerWidth;
+let H = window.innerHeight;
+let DPR = 1;
+
+function resizeCanvas(){
+
+  DPR = Math.min(
+    window.devicePixelRatio || 1,
+    2
+  );
+
+  W = window.innerWidth;
+  H = window.innerHeight;
+
+  canvas.width =
+    Math.floor(W * DPR);
+
+  canvas.height =
+    Math.floor(H * DPR);
+
+  canvas.style.width =
+    W + "px";
+
+  canvas.style.height =
+    H + "px";
+
+  ctx.setTransform(
+    DPR,
+    0,
+    0,
+    DPR,
+    0,
+    0
+  );
+}
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+resizeCanvas();
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const scoreElement =
+  document.getElementById("score");
+
+const levelElement =
+  document.getElementById("level");
+
+const energyBar =
+  document.getElementById("energyBar");
+
+const menu =
+  document.getElementById("menu");
+
+const pauseScreen =
+  document.getElementById("pauseScreen");
+
+const gameOverScreen =
+  document.getElementById("gameOver");
+
+const pauseButton =
+  document.getElementById("pauseBtn");
+
+const startButton =
+  document.getElementById("startBtn");
+
+const resumeButton =
+  document.getElementById("resumeBtn");
+
+const restartButton =
+  document.getElementById("restartBtn");
+
+const pauseRestartButton =
+  document.getElementById("pauseRestart");
+
+const leftButton =
+  document.getElementById("leftBtn");
+
+const rightButton =
+  document.getElementById("rightBtn");
+
+const jumpButton =
+  document.getElementById("jumpBtn");
+
+const finalScoreElement =
+  document.getElementById("finalScore");
+
+const bestTextElement =
+  document.getElementById("bestText");
+
+const toastElement =
+  document.getElementById("toast");
+
+
+/* =========================================================
+   GAME STATE
+   ========================================================= */
+
+let gameRunning = false;
+let gamePaused = false;
+
+let lastTime = 0;
+
+let score = 0;
+let level = 1;
+let energy = 100;
+
+let speed = 330;
+
+let lane = 1;
+let targetLane = 1;
+
+let playerY = 0;
+let playerVelocityY = 0;
+
+let playerOnGround = true;
+
+let obstacleTimer = 0;
+let orbTimer = 1;
+
+let screenShake = 0;
+let screenFlash = 0;
+
+let toastTimer = 0;
+
+let obstacles = [];
+let energyOrbs = [];
+let particles = [];
+
+let stars = [];
+let buildings = [];
+
+let bestScore = 0;
+
+try{
+
+  bestScore =
+    Number(
+      localStorage.getItem(
+        "neonEscapeBest"
+      ) || 0
+    );
+
+}catch(error){
+
+  bestScore = 0;
+
+}
+
+
+/* =========================================================
+   UTILITY FUNCTIONS
+   ========================================================= */
+
+function random(min,max){
+
+  return min +
+    Math.random() *
+    (max-min);
+
+}
+
+
+function clamp(value,min,max){
+
+  return Math.max(
+    min,
+    Math.min(max,value)
+  );
+
+}
+
+
+function laneX(value){
+
+  const spacing =
+    Math.min(
+      W * 0.25,
+      150
+    );
+
+  return (
+    W / 2 +
+    (value - 1) *
+    spacing
+  );
+
+}
+
+
+function getHorizon(){
+
+  return H * 0.61;
+
+}
+
+
+function getFloor(){
+
+  return H * 0.79;
+
+}
+
+
+function showElement(element){
+
+  element.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+function hideElement(element){
+
+  element.classList.add(
+    "hidden"
+  );
+
+}
+
+
+/* =========================================================
+   TOAST MESSAGE
+   ========================================================= */
+
+function showToast(message){
+
+  toastElement.textContent =
+    message;
+
+  toastElement.style.opacity =
+    "1";
+
+  toastTimer = 0.8;
+
+}
+
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+function createBackground(){
+
+  stars = [];
+  buildings = [];
+
+  for(
+    let i=0;
+    i<100;
+    i++
+  ){
+
+    stars.push({
+
+      x:
+        Math.random() * W,
+
+      y:
+        Math.random() *
+        H * 0.62,
+
+      radius:
+        Math.random() * 1.5 +
+        0.2,
+
+      phase:
+        Math.random() *
+        Math.PI * 2
+
+    });
+
+  }
+
+
+  let x = -20;
+
+  while(
+    x < W + 50
+  ){
+
+    const width =
+      random(35,90);
+
+    const height =
+      random(
+        H * 0.12,
+        H * 0.42
+      );
+
+    buildings.push({
+
+      x:x,
+
+      width:width,
+
+      height:height,
+
+      seed:
+        Math.random() * 1000
+
+    });
+
+    x +=
+      width +
+      random(6,16);
+
+  }
+
+}
+
+
+createBackground();
+
+
+/* =========================================================
+   RESET GAME
+   ========================================================= */
+
+function resetGame(){
+
+  score = 0;
+
+  level = 1;
+
+  energy = 100;
+
+  speed = 330;
+
+  lane = 1;
+
+  targetLane = 1;
+
+  playerY = 0;
+
+  playerVelocityY = 0;
+
+  playerOnGround = true;
+
+  obstacleTimer = 0.45;
+
+  orbTimer = 1.3;
+
+  screenShake = 0;
+
+  screenFlash = 0;
+
+  toastTimer = 0;
+
+  obstacles = [];
+
+  energyOrbs = [];
+
+  particles = [];
+
+  scoreElement.textContent =
+    "0";
+
+  levelElement.textContent =
+    "1";
+
+  energyBar.style.width =
+    "100%";
+
+  createBackground();
+
+}
+
+
+/* =========================================================
+   START GAME
+   ========================================================= */
+
+function startGame(){
+
+  if(
+    gameRunning &&
+    !gamePaused
+  ){
+
+    return;
+
+  }
+
+  resetGame();
+
+  gameRunning = true;
+
+  gamePaused = false;
+
+  hideElement(menu);
+
+  hideElement(pauseScreen);
+
+  hideElement(gameOverScreen);
+
+  showElement(pauseButton);
+
+  pauseButton.textContent =
+    "Ⅱ PAUSE";
+
+  showToast("RUN!");
+
+  lastTime =
+    performance.now();
+
+  requestAnimationFrame(
+    gameLoop
+  );
+
+}
+
+
+/* =========================================================
+   GAME OVER
+   ========================================================= */
+
+function endGame(){
+
+  gameRunning = false;
+
+  gamePaused = false;
+
+  const final =
+    Math.floor(score);
+
+  if(final > bestScore){
+
+    bestScore = final;
+
+    try{
+
+      localStorage.setItem(
+        "neonEscapeBest",
+        String(bestScore)
+      );
+
+    }catch(error){}
+
+  }
+
+  finalScoreElement.textContent =
+    String(final);
+
+  bestTextElement.textContent =
+    "BEST: " +
+    String(bestScore);
+
+  hideElement(pauseButton);
+
+  showElement(gameOverScreen);
+
+}
+
+
+/* =========================================================
+   PAUSE
+   ========================================================= */
+
+function togglePause(){
+
+  if(!gameRunning){
+
+    return;
+
+  }
+
+  gamePaused =
+    !gamePaused;
+
+  if(gamePaused){
+
+    showElement(
+      pauseScreen
+    );
+
+    pauseButton.textContent =
+      "▶ PLAY";
+
+  }else{
+
+    hideElement(
+      pauseScreen
+    );
+
+    pauseButton.textContent =
+      "Ⅱ PAUSE";
+
+    lastTime =
+      performance.now();
+
+    requestAnimationFrame(
+      gameLoop
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   MOVEMENT
+   ========================================================= */
+
+function moveLeft(){
+
+  if(
+    !gameRunning ||
+    gamePaused
+  ){
+
+    return;
+
+  }
+
+  targetLane =
+    clamp(
+      targetLane - 1,
+      0,
+      2
+    );
+
+}
+
+
+function moveRight(){
+
+  if(
+    !gameRunning ||
+    gamePaused
+  ){
+
+    return;
+
+  }
+
+  targetLane =
+    clamp(
+      targetLane + 1,
+      0,
+      2
+    );
+
+}
+
+
+function jump(){
+
+  if(
+    !gameRunning ||
+    gamePaused
+  ){
+
+    return;
+
+  }
+
+  if(playerOnGround){
+
+    playerVelocityY =
+      -720;
+
+    playerOnGround =
+      false;
+
+    createBurst(
+      laneX(lane),
+      getFloor() - 20,
+      14,
+      "jump"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   BUTTON EVENTS
+   ========================================================= */
+
+function bindButton(
+  element,
+  action
+){
+
+  element.addEventListener(
+    "pointerdown",
+    function(event){
+
+      event.preventDefault();
+
+      action();
+
+    },
+    {
+      passive:false
+    }
+  );
+
+}
+
+
+bindButton(
+  startButton,
+  startGame
+);
+
+bindButton(
+  restartButton,
+  startGame
+);
+
+bindButton(
+  pauseButton,
+  togglePause
+);
+
+bindButton(
+  resumeButton,
+  togglePause
+);
+
+bindButton(
+  pauseRestartButton,
+  function(){
+
+    hideElement(
+      pauseScreen
+    );
+
+    startGame();
+
+  }
+);
+
+bindButton(
+  leftButton,
+  moveLeft
+);
+
+bindButton(
+  rightButton,
+  moveRight
+);
+
+bindButton(
+  jumpButton,
+  jump
+);
+
+
+/* =========================================================
+   KEYBOARD CONTROLS
+   ========================================================= */
+
+window.addEventListener(
+  "keydown",
+  function(event){
+
+    const key =
+      event.key;
+
+    if(
+      key === "ArrowLeft" ||
+      key === "ArrowRight" ||
+      key === "ArrowUp" ||
+      key === " " ||
+      key === "a" ||
+      key === "A" ||
+      key === "d" ||
+      key === "D" ||
+      key === "w" ||
+      key === "W"
+    ){
+
+      event.preventDefault();
+
+    }
+
+
+    if(
+      key === "ArrowLeft" ||
+      key === "a" ||
+      key === "A"
+    ){
+
+      moveLeft();
+
+    }
+
+
+    if(
+      key === "ArrowRight" ||
+      key === "d" ||
+      key === "D"
+    ){
+
+      moveRight();
+
+    }
+
+
+    if(
+      key === "ArrowUp" ||
+      key === "w" ||
+      key === "W" ||
+      key === " "
+    ){
+
+      jump();
+
+    }
+
+
+    if(
+      key === "p" ||
+      key === "P" ||
+      key === "Escape"
+    ){
+
+      togglePause();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   OBSTACLES
+   ========================================================= */
+
+function createObstacle(){
+
+  const obstacleLane =
+    Math.floor(
+      Math.random() * 3
+    );
+
+  const tall =
+    Math.random() < 0.25;
+
+  obstacles.push({
+
+    lane:
+      obstacleLane,
+
+    z:1,
+
+    width:
+      tall ? 55 : 70,
+
+    height:
+      tall ? 105 : 58,
+
+    hit:false,
+
+    tall:tall
+
+  });
+
+}
+
+
+/* =========================================================
+   ENERGY ORBS
+   ========================================================= */
+
+function createOrb(){
+
+  energyOrbs.push({
+
+    lane:
+      Math.floor(
+        Math.random() * 3
+      ),
+
+    z:1,
+
+    rotation:
+      Math.random() *
+      Math.PI * 2,
+
+    hit:false
+
+  });
+
+}
+
+
+/* =========================================================
+   PARTICLES
+   ========================================================= */
+
+function createBurst(
+  x,
+  y,
+  amount,
+  type
+){
+
+  for(
+    let i=0;
+    i<amount;
+    i++
+  ){
+
+    const angle =
+      Math.random() *
+      Math.PI * 2;
+
+    const velocity =
+      random(30,180);
+
+    particles.push({
+
+      x:x,
+
+      y:y,
+
+      vx:
+        Math.cos(angle) *
+        velocity,
+
+      vy:
+        Math.sin(angle) *
+        velocity,
+
+      life:
+        random(.3,.8),
+
+      maxLife:.8,
+
+      type:type
+
+    });
+
+  }
+
+}
+
+
+/* =========================================================
+   UPDATE
+   ========================================================= */
+
+function update(dt){
+
+  /* SCORE */
+
+  score +=
+    dt *
+    (10 + level * 2);
+
+
+  /* LEVEL */
+
+  level =
+    1 +
+    Math.floor(
+      score / 500
+    );
+
+
+  /* SPEED */
+
+  speed =
+    330 +
+    (level - 1) * 25;
+
+
+  /* ENERGY DRAIN */
+
+  energy -=
+    dt *
+    (1.35 +
+     level * .12);
+
+
+  if(energy <= 0){
+
+    energy = 0;
+
+    endGame();
+
+    return;
+
+  }
+
+
+  /* HUD */
+
+  scoreElement.textContent =
+    String(
+      Math.floor(score)
+    );
+
+  levelElement.textContent =
+    String(level);
+
+  energyBar.style.width =
+    clamp(
+      energy,
+      0,
+      100
+    ) + "%";
+
+
+  /* LANE MOVEMENT */
+
+  lane +=
+    (targetLane - lane) *
+    Math.min(
+      1,
+      dt * 14
+    );
+
+
+  /* PLAYER GRAVITY */
+
+  playerVelocityY +=
+    1800 * dt;
+
+  playerY +=
+    playerVelocityY * dt;
+
+
+  if(
+    playerY >= 0
+  ){
+
+    playerY = 0;
+
+    playerVelocityY = 0;
+
+    playerOnGround =
+      true;
+
+  }
+
+
+  /* OBSTACLE TIMER */
+
+  obstacleTimer -= dt;
+
+  if(
+    obstacleTimer <= 0
+  ){
+
+    createObstacle();
+
+    obstacleTimer =
+      Math.max(
+        .43,
+        1.05 -
+        level * .025
+      ) *
+      random(.7,1.15);
+
+  }
+
+
+  /* ORB TIMER */
+
+  orbTimer -= dt;
+
+  if(
+    orbTimer <= 0
+  ){
+
+    createOrb();
+
+    orbTimer =
+      random(
+        1.4,
+        2.5
+      );
+
+  }
+
+
+  /* MOVE OBJECTS */
+
+  const movement =
+    dt *
+    speed /
+    600;
+
+
+  for(
+    const obstacle
+    of obstacles
+  ){
+
+    obstacle.z -=
+      movement;
+
+  }
+
+
+  for(
+    const orb
+    of energyOrbs
+  ){
+
+    orb.z -=
+      movement;
+
+  }
+
+
+  /* PLAYER */
+
+  const playerX =
+    laneX(lane);
+
+  const playerScreenY =
+    getFloor() -
+    20 +
+    playerY;
+
+
+  /* COLLISIONS */
+
+  for(
+    const obstacle
+    of obstacles
+  ){
+
+    if(
+      obstacle.hit
+    ){
+
+      continue;
+
+    }
+
+
+    if(
+      obstacle.z < .18 ||
+      obstacle.z > .43
+    ){
+
+      continue;
+
+    }
+
+
+    const obstacleX =
+      laneX(
+        obstacle.lane
+      );
+
+
+    const distance =
+      Math.abs(
+        playerX -
+        obstacleX
+      );
+
+
+    if(
+      distance < 38 &&
+      playerY >
+        -obstacle.height +
+        20
+    ){
+
+      obstacle.hit = true;
+
+      energy -= 25;
+
+      screenFlash = .22;
+
+      screenShake
