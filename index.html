@@ -1553,4 +1553,1394 @@ function update(dt){
 
       screenFlash = .22;
 
-      screenShake
+            screenShake = 14;
+
+      player.invincible = true;
+      player.invincibleTimer = 900;
+
+      createExplosion(
+        playerX,
+        playerY,
+        "#ff2bd6",
+        22
+      );
+
+      createFloatingText(
+        playerX,
+        playerY - 45,
+        "-25 ENERGY",
+        "#ff3b81"
+      );
+
+      if (energy <= 0) {
+        energy = 0;
+        gameOver();
+        return;
+      }
+    }
+  }
+
+
+  // ============================
+  // COLLECT ENERGY
+  // ============================
+
+  for (let i = energyOrbs.length - 1; i >= 0; i--) {
+
+    const orb = energyOrbs[i];
+
+    const orbX = laneX(orb.lane);
+    const orbY = orb.y;
+
+    const dx = playerX - orbX;
+    const dy = playerY - orbY;
+
+    const distance = Math.sqrt(
+      dx * dx + dy * dy
+    );
+
+    if (distance < 45) {
+
+      energyOrbs.splice(i, 1);
+
+      energy = Math.min(
+        100,
+        energy + 15
+      );
+
+      score += 100;
+
+      createExplosion(
+        orbX,
+        orbY,
+        "#00f7ff",
+        18
+      );
+
+      createFloatingText(
+        orbX,
+        orbY - 20,
+        "+15 ENERGY",
+        "#00f7ff"
+      );
+
+      screenFlash = .08;
+    }
+  }
+
+
+  // ============================
+  // REMOVE OLD OBJECTS
+  // ============================
+
+  for (
+    let i = obstacles.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    if (
+      obstacles[i].y >
+      canvas.height + 120
+    ) {
+
+      obstacles.splice(i, 1);
+
+      score += 10;
+    }
+  }
+
+
+  for (
+    let i = energyOrbs.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    if (
+      energyOrbs[i].y >
+      canvas.height + 100
+    ) {
+
+      energyOrbs.splice(i, 1);
+    }
+  }
+
+
+  // ============================
+  // LEVEL SYSTEM
+  // ============================
+
+  const newLevel =
+    Math.floor(score / 1000) + 1;
+
+  if (newLevel > level) {
+
+    level = newLevel;
+
+    createFloatingText(
+      canvas.width / 2,
+      canvas.height / 2,
+      "LEVEL " + level,
+      "#b000ff"
+    );
+
+    screenFlash = .15;
+
+    createExplosion(
+      canvas.width / 2,
+      canvas.height / 2,
+      "#b000ff",
+      35
+    );
+  }
+
+
+  // ============================
+  // ENERGY DRAIN
+  // ============================
+
+  energy -=
+    0.003 +
+    level * 0.0004;
+
+  if (energy <= 0) {
+
+    energy = 0;
+
+    gameOver();
+
+    return;
+  }
+
+
+  // ============================
+  // SCREEN EFFECTS
+  // ============================
+
+  if (screenFlash > 0) {
+
+    screenFlash -=
+      dt * 0.001;
+
+    if (screenFlash < 0) {
+      screenFlash = 0;
+    }
+  }
+
+
+  if (screenShake > 0) {
+
+    screenShake *= 0.88;
+
+    if (screenShake < 0.2) {
+      screenShake = 0;
+    }
+  }
+
+
+  // ============================
+  // INVINCIBILITY TIMER
+  // ============================
+
+  if (player.invincible) {
+
+    player.invincibleTimer -= dt;
+
+    if (
+      player.invincibleTimer <= 0
+    ) {
+
+      player.invincible = false;
+      player.invincibleTimer = 0;
+    }
+  }
+
+
+  // ============================
+  // PARTICLE UPDATE
+  // ============================
+
+  for (
+    let i = particles.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const p = particles[i];
+
+    p.x += p.vx * dt * 0.06;
+    p.y += p.vy * dt * 0.06;
+
+    p.vy +=
+      p.gravity *
+      dt *
+      0.001;
+
+    p.life -=
+      dt *
+      0.001;
+
+    p.size *= 0.995;
+
+    if (p.life <= 0) {
+
+      particles.splice(i, 1);
+    }
+  }
+
+
+  // ============================
+  // FLOATING TEXT UPDATE
+  // ============================
+
+  for (
+    let i = floatingTexts.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const text =
+      floatingTexts[i];
+
+    text.y -=
+      dt *
+      0.045;
+
+    text.life -=
+      dt *
+      0.001;
+
+    if (text.life <= 0) {
+
+      floatingTexts.splice(i, 1);
+    }
+  }
+
+
+  // ============================
+  // TRAIL
+  // ============================
+
+  playerTrail.push({
+    x: playerX,
+    y: playerY,
+    life: 1
+  });
+
+  if (
+    playerTrail.length > 18
+  ) {
+
+    playerTrail.shift();
+  }
+
+  for (
+    let i = 0;
+    i < playerTrail.length;
+    i++
+  ) {
+
+    playerTrail[i].life -=
+      0.045;
+  }
+}
+
+
+// =====================================
+// CREATE PARTICLES
+// =====================================
+
+function createExplosion(
+  x,
+  y,
+  color,
+  amount = 20
+) {
+
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    const angle =
+      Math.random() *
+      Math.PI * 2;
+
+    const speed =
+      1 +
+      Math.random() * 5;
+
+    particles.push({
+
+      x: x,
+
+      y: y,
+
+      vx:
+        Math.cos(angle) *
+        speed,
+
+      vy:
+        Math.sin(angle) *
+        speed,
+
+      gravity:
+        Math.random() * 2,
+
+      size:
+        2 +
+        Math.random() * 5,
+
+      life:
+        0.5 +
+        Math.random() * 0.8,
+
+      color:
+        color
+    });
+  }
+}
+
+
+// =====================================
+// FLOATING TEXT
+// =====================================
+
+function createFloatingText(
+  x,
+  y,
+  text,
+  color
+) {
+
+  floatingTexts.push({
+
+    x: x,
+
+    y: y,
+
+    text: text,
+
+    color: color,
+
+    life: 1
+  });
+}
+
+
+// =====================================
+// DRAW EVERYTHING
+// =====================================
+
+function draw() {
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  // SCREEN SHAKE
+
+  ctx.save();
+
+  if (screenShake > 0) {
+
+    const shakeX =
+      (Math.random() - 0.5) *
+      screenShake;
+
+    const shakeY =
+      (Math.random() - 0.5) *
+      screenShake;
+
+    ctx.translate(
+      shakeX,
+      shakeY
+    );
+  }
+
+
+  drawBackground();
+
+  drawRoad();
+
+  drawEnergyOrbs();
+
+  drawObstacles();
+
+  drawPlayer();
+
+  drawParticles();
+
+  drawFloatingTexts();
+
+
+  ctx.restore();
+
+
+  // FLASH EFFECT
+
+  if (screenFlash > 0) {
+
+    ctx.fillStyle =
+      `rgba(255,255,255,${screenFlash})`;
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+  }
+
+
+  updateHUD();
+}
+
+
+// =====================================
+// BACKGROUND
+// =====================================
+
+function drawBackground() {
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      canvas.height
+    );
+
+  gradient.addColorStop(
+    0,
+    "#050014"
+  );
+
+  gradient.addColorStop(
+    0.5,
+    "#12002d"
+  );
+
+  gradient.addColorStop(
+    1,
+    "#020006"
+  );
+
+  ctx.fillStyle = gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  // NEON SUN
+
+  const sunX =
+    canvas.width / 2;
+
+  const sunY =
+    canvas.height * 0.25;
+
+  const sunRadius =
+    Math.min(
+      canvas.width,
+      canvas.height
+    ) * 0.12;
+
+  const sunGradient =
+    ctx.createRadialGradient(
+      sunX,
+      sunY,
+      5,
+      sunX,
+      sunY,
+      sunRadius
+    );
+
+  sunGradient.addColorStop(
+    0,
+    "rgba(255,50,220,.9)"
+  );
+
+  sunGradient.addColorStop(
+    0.5,
+    "rgba(130,0,255,.35)"
+  );
+
+  sunGradient.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle =
+    sunGradient;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    sunX,
+    sunY,
+    sunRadius,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  // CITY BUILDINGS
+
+  const buildingCount = 26;
+
+  for (
+    let i = 0;
+    i < buildingCount;
+    i++
+  ) {
+
+    const w =
+      canvas.width /
+      buildingCount;
+
+    const x =
+      i * w;
+
+    const h =
+      60 +
+      Math.sin(i * 4.2) *
+      40 +
+      Math.random() *
+      30;
+
+    const y =
+      canvas.height * 0.48 -
+      h;
+
+    ctx.fillStyle =
+      "#080817";
+
+    ctx.fillRect(
+      x,
+      y,
+      w + 2,
+      h
+    );
+
+
+    // WINDOWS
+
+    for (
+      let wy = y + 12;
+      wy < canvas.height * 0.48 - 8;
+      wy += 15
+    ) {
+
+      for (
+        let wx = x + 7;
+        wx < x + w - 5;
+        wx += 13
+      ) {
+
+        if (
+          Math.random() > 0.48
+        ) {
+
+          ctx.fillStyle =
+            Math.random() > 0.5
+              ? "#00f7ff"
+              : "#b000ff";
+
+          ctx.globalAlpha =
+            0.35 +
+            Math.random() * 0.5;
+
+          ctx.fillRect(
+            wx,
+            wy,
+            3,
+            5
+          );
+
+          ctx.globalAlpha = 1;
+        }
+      }
+    }
+  }
+}
+
+
+// =====================================
+// ROAD
+// =====================================
+
+function drawRoad() {
+
+  const horizon =
+    canvas.height * 0.48;
+
+  const bottom =
+    canvas.height;
+
+  const center =
+    canvas.width / 2;
+
+
+  ctx.fillStyle =
+    "#05050c";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    center - canvas.width * 0.08,
+    horizon
+  );
+
+  ctx.lineTo(
+    center + canvas.width * 0.08,
+    horizon
+  );
+
+  ctx.lineTo(
+    canvas.width * 0.95,
+    bottom
+  );
+
+  ctx.lineTo(
+    canvas.width * 0.05,
+    bottom
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  // ROAD GLOW
+
+  ctx.strokeStyle =
+    "rgba(0,247,255,.35)";
+
+  ctx.lineWidth = 3;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    center -
+    canvas.width * 0.08,
+    horizon
+  );
+
+  ctx.lineTo(
+    canvas.width * 0.05,
+    bottom
+  );
+
+  ctx.moveTo(
+    center +
+    canvas.width * 0.08,
+    horizon
+  );
+
+  ctx.lineTo(
+    canvas.width * 0.95,
+    bottom
+  );
+
+  ctx.stroke();
+
+
+  // LANE LINES
+
+  const lanePositions = [
+    center -
+      canvas.width * 0.026,
+    center +
+      canvas.width * 0.026
+  ];
+
+  for (
+    const laneXPos of lanePositions
+  ) {
+
+    ctx.strokeStyle =
+      "rgba(170,0,255,.5)";
+
+    ctx.lineWidth = 2;
+
+    ctx.setLineDash([
+      25,
+      25
+    ]);
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      center,
+      horizon
+    );
+
+    ctx.lineTo(
+      laneXPos +
+        (laneXPos - center) *
+        18,
+      bottom
+    );
+
+    ctx.stroke();
+  }
+
+  ctx.setLineDash([]);
+
+
+  // ROAD GRID
+
+  for (
+    let i = 0;
+    i < 18;
+    i++
+  ) {
+
+    const t =
+      (i / 18);
+
+    const y =
+      horizon +
+      Math.pow(t, 2) *
+      (bottom - horizon);
+
+    const width =
+      t *
+      canvas.width *
+      0.9;
+
+    ctx.strokeStyle =
+      `rgba(0,247,255,${0.03 + t * 0.1})`;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+      center - width / 2,
+      y
+    );
+
+    ctx.lineTo(
+      center + width / 2,
+      y
+    );
+
+    ctx.stroke();
+  }
+}
+
+
+// =====================================
+// PLAYER
+// =====================================
+
+function drawPlayer() {
+
+  const x =
+    laneX(player.lane);
+
+  const y =
+    playerY;
+
+
+  // TRAIL
+
+  for (
+    let i = 0;
+    i < playerTrail.length;
+    i++
+  ) {
+
+    const t =
+      playerTrail[i];
+
+    if (t.life <= 0) {
+      continue;
+    }
+
+    ctx.globalAlpha =
+      t.life * 0.25;
+
+    ctx.fillStyle =
+      "#00f7ff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      t.x,
+      t.y,
+      7 * t.life,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+
+
+  // GLOW
+
+  const glow =
+    ctx.createRadialGradient(
+      x,
+      y,
+      2,
+      x,
+      y,
+      55
+    );
+
+  glow.addColorStop(
+    0,
+    "rgba(0,247,255,.65)"
+  );
+
+  glow.addColorStop(
+    0.4,
+    "rgba(150,0,255,.25)"
+  );
+
+  glow.addColorStop(
+    1,
+    "rgba(0,0,0,0)"
+  );
+
+  ctx.fillStyle = glow;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    55,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  // PLAYER BODY
+
+  ctx.save();
+
+  ctx.translate(
+    x,
+    y
+  );
+
+  if (
+    player.invincible &&
+    Math.floor(
+      performance.now() / 90
+    ) % 2 === 0
+  ) {
+
+    ctx.globalAlpha = 0.35;
+  }
+
+
+  // BODY
+
+  ctx.fillStyle =
+    "#00eaff";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    -28
+  );
+
+  ctx.lineTo(
+    17,
+    18
+  );
+
+  ctx.lineTo(
+    0,
+    27
+  );
+
+  ctx.lineTo(
+    -17,
+    18
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  ctx.strokeStyle =
+    "#ffffff";
+
+  ctx.lineWidth = 2;
+
+  ctx.stroke();
+
+
+  // CORE
+
+  ctx.fillStyle =
+    "#b000ff";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    2,
+    8,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  // WINGS
+
+  ctx.fillStyle =
+    "rgba(0,247,255,.7)";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -12,
+    5
+  );
+
+  ctx.lineTo(
+    -30,
+    20
+  );
+
+  ctx.lineTo(
+    -12,
+    18
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    12,
+    5
+  );
+
+  ctx.lineTo(
+    30,
+    20
+  );
+
+  ctx.lineTo(
+    12,
+    18
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  ctx.restore();
+
+
+  // ENGINE FIRE
+
+  const fire =
+    10 +
+    Math.random() * 12;
+
+  const engine =
+    ctx.createLinearGradient(
+      x,
+      y + 20,
+      x,
+      y + 20 + fire
+    );
+
+  engine.addColorStop(
+    0,
+    "#ffffff"
+  );
+
+  engine.addColorStop(
+    0.4,
+    "#00f7ff"
+  );
+
+  engine.addColorStop(
+    1,
+    "rgba(176,0,255,0)"
+  );
+
+  ctx.fillStyle =
+    engine;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x - 7,
+    y + 20
+  );
+
+  ctx.lineTo(
+    x + 7,
+    y + 20
+  );
+
+  ctx.lineTo(
+    x,
+    y + 20 + fire
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+}
+
+
+// =====================================
+// OBSTACLES
+// =====================================
+
+function drawObstacles() {
+
+  for (
+    const obstacle of obstacles
+  ) {
+
+    const x =
+      laneX(obstacle.lane);
+
+    const y =
+      obstacle.y;
+
+    const width =
+      obstacle.width;
+
+    const height =
+      obstacle.height;
+
+
+    ctx.save();
+
+    ctx.translate(
+      x,
+      y
+    );
+
+
+    // GLOW
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+      "#ff006e";
+
+    ctx.fillStyle =
+      "#ff006e";
+
+    ctx.fillRect(
+      -width / 2,
+      -height,
+      width,
+      height
+    );
+
+
+    // INNER PANEL
+
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle =
+      "#17001b";
+
+    ctx.fillRect(
+      -width / 2 + 5,
+      -height + 5,
+      width - 10,
+      height - 10
+    );
+
+
+    // WARNING STRIPES
+
+    ctx.strokeStyle =
+      "#ff2bd6";
+
+    ctx.lineWidth = 3;
+
+    for (
+      let i = -height;
+      i < width;
+      i += 15
+    ) {
+
+      ctx.beginPath();
+
+      ctx.moveTo(
+        -width / 2 + i,
+        -height
+      );
+
+      ctx.lineTo(
+        -width / 2 + i + 15,
+        0
+      );
+
+      ctx.stroke();
+    }
+
+
+    ctx.restore();
+  }
+}
+
+
+// =====================================
+// ENERGY ORBS
+// =====================================
+
+function drawEnergyOrbs() {
+
+  for (
+    const orb of energyOrbs
+  ) {
+
+    const x =
+      laneX(orb.lane);
+
+    const y =
+      orb.y;
+
+    const pulse =
+      1 +
+      Math.sin(
+        performance.now() * 0.006 +
+        orb.phase
+      ) * 0.2;
+
+
+    const glow =
+      ctx.createRadialGradient(
+        x,
+        y,
+        2,
+        x,
+        y,
+        35 * pulse
+      );
+
+    glow.addColorStop(
+      0,
+      "rgba(0,247,255,.9)"
+    );
+
+    glow.addColorStop(
+      0.35,
+      "rgba(0,247,255,.35)"
+    );
+
+    glow.addColorStop(
+      1,
+      "rgba(0,247,255,0)"
+    );
+
+    ctx.fillStyle =
+      glow;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      35 * pulse,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    ctx.strokeStyle =
+      "#00f7ff";
+
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      11 * pulse,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.stroke();
+
+
+    ctx.fillStyle =
+      "#ffffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      y,
+      4,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+}
+
+
+// =====================================
+// PARTICLES DRAW
+// =====================================
+
+function drawParticles() {
+
+  for (
+    const p of particles
+  ) {
+
+    if (p.life <= 0) {
+      continue;
+    }
+
+    ctx.globalAlpha =
+      Math.max(
+        0,
+        p.life
+      );
+
+    ctx.fillStyle =
+      p.color;
+
+    ctx.shadowBlur = 12;
+
+    ctx.shadowColor =
+      p.color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+  }
+
+  ctx.globalAlpha = 1;
+
+  ctx.shadowBlur = 0;
+}
+
+
+// =====================================
+// FLOATING TEXT DRAW
+// =====================================
+
+function drawFloatingTexts() {
+
+  for (
+    const t of floatingTexts
+  ) {
+
+    ctx.globalAlpha =
+      Math.max(
+        0,
+        t.life
+      );
+
+    ctx.font =
+      "bold 16px Arial";
+
+    ctx.textAlign =
+      "center";
+
+    ctx.fillStyle =
+      t.color;
+
+    ctx.shadowBlur = 12;
+
+    ctx.shadowColor =
+      t.color;
+
+    ctx.fillText(
+      t.text,
+      t.x,
+      t.y
+    );
+  }
+
+  ctx.globalAlpha = 1;
+
+  ctx.shadowBlur = 0;
+}
+
+
+// =====================================
+// HUD
+// =====================================
+
+function updateHUD() {
+
+  if (scoreElement) {
+
+    scoreElement.textContent =
+      Math.floor(score);
+  }
+
+  if (levelElement) {
+
+    levelElement.textContent =
+      level;
+  }
+
+  if (energyElement) {
+
+    energyElement.textContent =
+      Math.floor(energy);
+  }
+
+
+  if (energyBar) {
+
+    energyBar.style.width =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          energy
+        )
+      ) + "%";
+  }
+      }
