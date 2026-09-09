@@ -2913,6 +2913,1126 @@ function drawPlayer(){
 
   ctx.lineWidth=10;
 
-  /* BACK LEG */
+    /* BACK LEG */
 
-  ct
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    30
+  );
+
+  ctx.lineTo(
+    legB * 0.35,
+    58
+  );
+
+  ctx.lineTo(
+    legB,
+    82
+  );
+
+  ctx.stroke();
+
+
+  /* BACK SHOE */
+
+  ctx.strokeStyle =
+    "#111827";
+
+  ctx.lineWidth=11;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    legB-2,
+    82
+  );
+
+  ctx.lineTo(
+    legB-15,
+    84
+  );
+
+  ctx.stroke();
+
+
+  /* FRONT LEG */
+
+  ctx.strokeStyle =
+    c.pants;
+
+  ctx.lineWidth=10;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    0,
+    30
+  );
+
+  ctx.lineTo(
+    legA * 0.35,
+    58
+  );
+
+  ctx.lineTo(
+    legA,
+    82
+  );
+
+  ctx.stroke();
+
+
+  /* FRONT SHOE */
+
+  ctx.strokeStyle =
+    "#111827";
+
+  ctx.lineWidth=11;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    legA,
+    82
+  );
+
+  ctx.lineTo(
+    legA+16,
+    84
+  );
+
+  ctx.stroke();
+
+
+  /* SHOE GLOW */
+
+  ctx.shadowBlur=12;
+
+  ctx.shadowColor=
+    c.accent;
+
+  ctx.strokeStyle=
+    c.accent;
+
+  ctx.lineWidth=3;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    legA,
+    84
+  );
+
+  ctx.lineTo(
+    legA+14,
+    84
+  );
+
+  ctx.stroke();
+
+  ctx.shadowBlur=0;
+
+
+  /* BODY */
+
+  ctx.fillStyle=
+    c.shirt;
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    -18,
+    -12,
+    36,
+    48,
+    10
+  );
+
+  ctx.fill();
+
+
+  /* JACKET HIGHLIGHT */
+
+  ctx.fillStyle=
+    "rgba(255,255,255,.18)";
+
+  ctx.fillRect(
+    -13,
+    -7,
+    6,
+    35
+  );
+
+
+  /* NEON CHEST LOGO */
+
+  ctx.shadowBlur=12;
+
+  ctx.shadowColor=
+    c.accent;
+
+  ctx.fillStyle=
+    c.accent;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    8,
+    5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.shadowBlur=0;
+
+
+  /* NECK */
+
+  ctx.fillStyle=
+    c.skin;
+
+  ctx.fillRect(
+    -7,
+    -22,
+    14,
+    12
+  );
+
+
+  /* HEAD */
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    -38,
+    18,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* HAIR */
+
+  ctx.fillStyle=
+    c.hair;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    -43,
+    18,
+    Math.PI,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -18,
+    -42
+  );
+
+  ctx.lineTo(
+    -12,
+    -55
+  );
+
+  ctx.lineTo(
+    -4,
+    -48
+  );
+
+  ctx.lineTo(
+    4,
+    -57
+  );
+
+  ctx.lineTo(
+    11,
+    -48
+  );
+
+  ctx.lineTo(
+    18,
+    -42
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
+
+
+  /* EYES */
+
+  ctx.fillStyle=
+    "#ffffff";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -6,
+    -38,
+    2.5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    6,
+    -38,
+    2.5,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* EYE GLOW */
+
+  ctx.fillStyle=
+    c.accent;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -6,
+    -38,
+    1.2,
+    0,
+    Math.PI*2
+  );
+
+  ctx.arc(
+    6,
+    -38,
+    1.2,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* FACE */
+
+  ctx.strokeStyle=
+    "rgba(80,30,20,.45)";
+
+  ctx.lineWidth=2;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    0,
+    -34,
+    7,
+    0.2,
+    Math.PI-0.2
+  );
+
+  ctx.stroke();
+
+
+  /* RUNNING ARM */
+
+  ctx.strokeStyle=
+    c.shirt;
+
+  ctx.lineWidth=9;
+
+  const armA =
+    Math.sin(
+      player.anim
+    ) * 18;
+
+  const armB =
+    -armA;
+
+  /* BACK ARM */
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    -16,
+    -5
+  );
+
+  ctx.lineTo(
+    -28,
+    10 + armB*.35
+  );
+
+  ctx.lineTo(
+    -25,
+    28 + armB
+  );
+
+  ctx.stroke();
+
+
+  /* BACK HAND */
+
+  ctx.fillStyle=
+    c.skin;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    -25,
+    29 + armB,
+    6,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* FRONT ARM */
+
+  ctx.strokeStyle=
+    c.shirt;
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    16,
+    -5
+  );
+
+  ctx.lineTo(
+    28,
+    10 + armA*.35
+  );
+
+  ctx.lineTo(
+    25,
+    28 + armA
+  );
+
+  ctx.stroke();
+
+
+  /* FRONT HAND */
+
+  ctx.fillStyle=
+    c.skin;
+
+  ctx.beginPath();
+
+  ctx.arc(
+    25,
+    29 + armA,
+    6,
+    0,
+    Math.PI*2
+  );
+
+  ctx.fill();
+
+
+  /* SHIELD */
+
+  if(player.shield){
+
+    ctx.save();
+
+    ctx.globalAlpha=
+      .22 +
+      Math.sin(
+        performance.now()/120
+      )*.08;
+
+    ctx.strokeStyle=
+      c.accent;
+
+    ctx.lineWidth=4;
+
+    ctx.shadowBlur=25;
+
+    ctx.shadowColor=
+      c.accent;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      0,
+      5,
+      65,
+      0,
+      Math.PI*2
+    );
+
+    ctx.stroke();
+
+    ctx.restore();
+  }
+
+
+  /* BOOST TRAIL */
+
+  if(player.boost){
+
+    ctx.save();
+
+    ctx.globalAlpha=.45;
+
+    ctx.fillStyle=
+      c.accent;
+
+    for(
+      let i=0;
+      i<5;
+      i++
+    ){
+
+      ctx.fillRect(
+        -8,
+        75+i*9,
+        16-i*2,
+        5
+      );
+    }
+
+    ctx.restore();
+  }
+
+
+  ctx.restore();
+}
+
+
+/* =========================
+   PARTICLES
+========================= */
+
+function drawParticles(){
+
+  for(
+    const p of particles
+  ){
+
+    ctx.save();
+
+    ctx.globalAlpha=
+      p.life/p.max;
+
+    ctx.fillStyle=
+      p.color;
+
+    ctx.shadowBlur=12;
+
+    ctx.shadowColor=
+      p.color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x,
+      p.y,
+      p.size,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+  }
+}
+
+
+/* =========================
+   HUD
+========================= */
+
+function updateHUD(){
+
+  scoreEl.textContent=
+    Math.floor(score);
+
+  levelEl.textContent=
+    level;
+
+  bestEl.textContent=
+    Math.max(
+      best,
+      Math.floor(score)
+    );
+
+  collectedEl.textContent=
+    collected;
+
+  energyBar.style.width=
+    Math.max(
+      0,
+      energy
+    )+"%";
+}
+
+
+/* =========================
+   ROUND RECT
+========================= */
+
+function roundRect(
+  ctx,
+  x,
+  y,
+  w,
+  h,
+  r
+){
+
+  const radius=
+    Math.min(
+      r,
+      Math.abs(w)/2,
+      Math.abs(h)/2
+    );
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    x+radius,
+    y
+  );
+
+  ctx.arcTo(
+    x+w,
+    y,
+    x+w,
+    y+h,
+    radius
+  );
+
+  ctx.arcTo(
+    x+w,
+    y+h,
+    x,
+    y+h,
+    radius
+  );
+
+  ctx.arcTo(
+    x,
+    y+h,
+    x,
+    y,
+    radius
+  );
+
+  ctx.arcTo(
+    x,
+    y,
+    x+w,
+    y,
+    radius
+  );
+
+  ctx.closePath();
+}
+
+
+/* =========================
+   MAIN GAME LOOP
+========================= */
+
+function loop(
+  timestamp
+){
+
+  if(!lastTime)
+    lastTime=
+      timestamp;
+
+  const dt=
+    Math.min(
+      40,
+      timestamp-lastTime
+    );
+
+  lastTime=
+    timestamp;
+
+
+  if(running && !paused){
+
+    update(dt);
+
+    draw();
+  }
+
+
+  requestAnimationFrame(
+    loop
+  );
+}
+
+
+/* =========================
+   PLAYER CONTROLS
+========================= */
+
+function moveLeft(){
+
+  if(!running || paused)
+    return;
+
+  player.targetLane=
+    Math.max(
+      0,
+      player.targetLane-1
+    );
+
+  shake=
+    3;
+}
+
+
+function moveRight(){
+
+  if(!running || paused)
+    return;
+
+  player.targetLane=
+    Math.min(
+      2,
+      player.targetLane+1
+    );
+
+  shake=
+    3;
+}
+
+
+function jump(){
+
+  if(!running || paused)
+    return;
+
+  if(
+    player.y===0
+  ){
+
+    player.vy=
+      0.95;
+
+    player.jump=
+      true;
+
+    burst(
+      laneX(
+        player.lane,
+        .95
+      ),
+      H*.78,
+      8,
+      "#ffffff"
+    );
+  }
+}
+
+
+/* =========================
+   KEYBOARD
+========================= */
+
+document.addEventListener(
+  "keydown",
+  e=>{
+
+    if(
+      e.key==="ArrowLeft" ||
+      e.key.toLowerCase()==="a"
+    ){
+
+      moveLeft();
+    }
+
+    if(
+      e.key==="ArrowRight" ||
+      e.key.toLowerCase()==="d"
+    ){
+
+      moveRight();
+    }
+
+    if(
+      e.key==="ArrowUp" ||
+      e.key===" " ||
+      e.key.toLowerCase()==="w"
+    ){
+
+      e.preventDefault();
+
+      jump();
+    }
+
+    if(
+      e.key.toLowerCase()==="p"
+    ){
+
+      if(running){
+
+        if(paused)
+          resumeGame();
+
+        else
+          pauseGame();
+      }
+    }
+  }
+);
+
+
+/* =========================
+   MOBILE BUTTON PRESS
+========================= */
+
+function press(
+  element,
+  action
+){
+
+  element.addEventListener(
+    "touchstart",
+    e=>{
+
+      e.preventDefault();
+
+      action();
+
+    },
+    {
+      passive:false
+    }
+  );
+
+  element.addEventListener(
+    "mousedown",
+    e=>{
+
+      e.preventDefault();
+
+      action();
+
+    }
+  );
+}
+
+
+press(
+  leftBtn,
+  moveLeft
+);
+
+press(
+  rightBtn,
+  moveRight
+);
+
+press(
+  jumpBtn,
+  jump
+);
+
+
+/* =========================
+   MENU BUTTONS
+========================= */
+
+startBtn.onclick=
+  startGame;
+
+resumeBtn.onclick=
+  resumeGame;
+
+pauseRestartBtn.onclick=
+  startGame;
+
+pauseHomeBtn.onclick=
+  goHome;
+
+restartBtn.onclick=
+  startGame;
+
+homeBtn.onclick=
+  goHome;
+
+pauseBtn.onclick=()=>{
+
+  if(!running)
+    return;
+
+  if(paused)
+    resumeGame();
+
+  else
+    pauseGame();
+};
+
+
+/* =========================
+   CHARACTER SELECT
+========================= */
+
+document
+  .querySelectorAll(
+    ".char"
+  )
+  .forEach(btn=>{
+
+    btn.onclick=()=>{
+
+      document
+        .querySelectorAll(
+          ".char"
+        )
+        .forEach(
+          x=>
+            x.classList
+             .remove("selected")
+        );
+
+      btn.classList.add(
+        "selected"
+      );
+
+      selectedCharacter=
+        Number(
+          btn.dataset.char
+        );
+
+      drawPreviews();
+    };
+  });
+
+
+/* =========================
+   SWIPE CONTROLS
+========================= */
+
+let touchStartX=0;
+let touchStartY=0;
+
+canvas.addEventListener(
+  "touchstart",
+  e=>{
+
+    const t=
+      e.touches[0];
+
+    touchStartX=
+      t.clientX;
+
+    touchStartY=
+      t.clientY;
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+canvas.addEventListener(
+  "touchend",
+  e=>{
+
+    const t=
+      e.changedTouches[0];
+
+    const dx=
+      t.clientX-touchStartX;
+
+    const dy=
+      t.clientY-touchStartY;
+
+    if(
+      Math.abs(dx)>
+      Math.abs(dy)
+    ){
+
+      if(
+        Math.abs(dx)>35
+      ){
+
+        if(dx<0)
+          moveLeft();
+
+        else
+          moveRight();
+      }
+
+    }else{
+
+      if(
+        dy < -35
+      ){
+
+        jump();
+      }
+    }
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+/* =========================
+   AUTO PAUSE
+========================= */
+
+document.addEventListener(
+  "visibilitychange",
+  ()=>{
+
+    if(
+      document.hidden &&
+      running &&
+      !paused
+    ){
+
+      pauseGame();
+    }
+  }
+);
+
+
+/* =========================
+   CHARACTER PREVIEWS
+========================= */
+
+function drawPreviews(){
+
+  document
+    .querySelectorAll(
+      ".preview"
+    )
+    .forEach(
+      (preview,index)=>{
+
+        const pctx=
+          preview.getContext(
+            "2d"
+          );
+
+        const pw=
+          preview.width;
+
+        const ph=
+          preview.height;
+
+        pctx.clearRect(
+          0,
+          0,
+          pw,
+          ph
+        );
+
+        pctx.save();
+
+        pctx.translate(
+          pw/2,
+          ph/2+20
+        );
+
+        pctx.scale(
+          .65,
+          .65
+        );
+
+        const oldCtx=
+          ctx;
+
+        /* small preview */
+
+        const c=
+          characters[index];
+
+        pctx.fillStyle=
+          c.pants;
+
+        pctx.fillRect(
+          -8,
+          15,
+          16,
+          35
+        );
+
+        pctx.fillStyle=
+          c.shirt;
+
+        pctx.fillRect(
+          -14,
+          -15,
+          28,
+          35
+        );
+
+        pctx.fillStyle=
+          c.skin;
+
+        pctx.beginPath();
+
+        pctx.arc(
+          0,
+          -30,
+          15,
+          0,
+          Math.PI*2
+        );
+
+        pctx.fill();
+
+        pctx.fillStyle=
+          c.hair;
+
+        pctx.beginPath();
+
+        pctx.arc(
+          0,
+          -35,
+          15,
+          Math.PI,
+          Math.PI*2
+        );
+
+        pctx.fill();
+
+        pctx.restore();
+      }
+    );
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+resize();
+
+drawPreviews();
+
+updateHUD();
+
+goHome();
+
+requestAnimationFrame(
+  loop
+);
