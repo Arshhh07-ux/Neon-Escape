@@ -1,1 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,
+                   maximum-scale=1.0, user-scalable=no">
 
+    <title>NEON ESCAPE</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<canvas id="gameCanvas"></canvas>
+
+<!-- ================= HUD ================= -->
+
+<div id="hud" class="hidden">
+
+    <div class="hud-left">
+
+        <div class="hud-box">
+            <span>SCORE</span>
+            <strong id="score">000000</strong>
+        </div>
+
+        <div class="hud-box">
+            <span>BEST</span>
+            <strong id="best">000000</strong>
+        </div>
+
+        <div class="hud-box">
+            <span>LEVEL</span>
+            <strong id="level">01</strong>
+        </div>
+
+    </div>
+
+    <div class="hud-right">
+
+        <div class="energy-container">
+
+            <div class="energy-title">
+                <span>ENERGY</span>
+                <span id="energyText">100%</span>
+            </div>
+
+            <div class="energy-background">
+                <div id="energyBar"></div>
+            </div>
+
+        </div>
+
+        <div class="lives" id="lives">
+            ♥ ♥ ♥
+        </div>
+
+        <button id="pauseButton" class="pause-button">
+            ❚❚
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= START SCREEN ================= -->
+
+<div id="startScreen" class="screen">
+
+    <div class="menu-card">
+
+        <div class="small-title">
+            THE FUTURE IS COLLAPSING
+        </div>
+
+        <h1>
+            NEON<br>
+            <span>ESCAPE</span>
+        </h1>
+
+        <div class="line"></div>
+
+        <p class="tagline">
+            THE LAST SURVIVOR
+        </p>
+
+        <p class="description">
+            Run through the collapsing neon city.
+            Collect energy, dodge deadly barriers,
+            activate power-ups and survive as long as possible.
+        </p>
+
+        <div class="feature-row">
+
+            <div>
+                <b>⚡</b>
+                <span>ENERGY</span>
+            </div>
+
+            <div>
+                <b>◆</b>
+                <span>POWER</span>
+            </div>
+
+            <div>
+                <b>★</b>
+                <span>LEVELS</span>
+            </div>
+
+        </div>
+
+        <button id="startButton" class="main-button">
+            START ESCAPE
+        </button>
+
+        <p class="controls-info">
+            DESKTOP: ← → / A D / SPACE
+            <br>
+            MOBILE: TOUCH THE SCREEN
+        </p>
+
+    </div>
+
+</div>
+
+
+<!-- ================= COUNTDOWN ================= -->
+
+<div id="countdown" class="countdown hidden">
+    3
+</div>
+
+
+<!-- ================= PAUSE ================= -->
+
+<div id="pauseScreen" class="screen hidden">
+
+    <div class="menu-card small-card">
+
+        <div class="small-title">
+            SYSTEM PAUSED
+        </div>
+
+        <h2>PAUSED</h2>
+
+        <p class="description">
+            The city is waiting...
+        </p>
+
+        <button id="resumeButton" class="main-button">
+            RESUME
+        </button>
+
+        <button id="pauseRestartButton" class="secondary-button">
+            RESTART
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= GAME OVER ================= -->
+
+<div id="gameOverScreen" class="screen hidden">
+
+    <div class="menu-card">
+
+        <div class="small-title">
+            CONNECTION LOST
+        </div>
+
+        <h2>GAME OVER</h2>
+
+        <div class="line"></div>
+
+        <p class="final-label">
+            FINAL SCORE
+        </p>
+
+        <div id="finalScore" class="final-score">
+            000000
+        </div>
+
+        <div class="results">
+
+            <div>
+                <span>BEST</span>
+                <strong id="finalBest">000000</strong>
+            </div>
+
+            <div>
+                <span>LEVEL</span>
+                <strong id="finalLevel">01</strong>
+            </div>
+
+            <div>
+                <span>TIME</span>
+                <strong id="finalTime">00:00</strong>
+            </div>
+
+        </div>
+
+        <div id="newBest" class="new-best hidden">
+            ★ NEW HIGH SCORE ★
+        </div>
+
+        <button id="restartButton" class="main-button">
+            PLAY AGAIN
+        </button>
+
+        <button id="menuButton" class="secondary-button">
+            MAIN MENU
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MOBILE CONTROLS ================= -->
+
+<div id="mobileControls" class="hidden">
+
+    <button id="leftButton" class="control-button">
+        ◀
+    </button>
+
+    <button id="jumpButton" class="control-button jump">
+        ▲
+    </button>
+
+    <button id="rightButton" class="control-button">
+        ▶
+    </button>
+
+</div>
+
+
+<script src="game.js"></script>
+
+</body>
+</html>
