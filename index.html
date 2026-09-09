@@ -1539,4 +1539,1271 @@ const pauseCard=
 const overCard=
   document.getElementById("over");
 
-cons
+const message=
+  document.getElementById("message");
+
+const finalScore=
+  document.getElementById("finalScore");
+
+const bestScore=
+  document.getElementById("bestScore");
+
+const pauseBtn=
+  document.getElementById("pause");
+
+
+/* =====================================================
+   GAME STATE
+===================================================== */
+
+let running = false;
+let paused = false;
+
+let score = 0;
+let level = 1;
+let energy = 100;
+
+let speed = 25;
+
+let spawnTimer = 500;
+let orbTimer = 800;
+
+let playerLane = 0;
+let targetX = 0;
+
+let jumpY = 0;
+let jumpVelocity = 0;
+
+let runTime = 0;
+
+let last =
+  performance.now();
+
+let best =
+  Number(
+    localStorage.getItem(
+      "neonEscapeBest"
+    ) || 0
+  );
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+let messageTimer;
+
+function showMessage(text){
+
+  message.textContent = text;
+
+  message.classList.add("show");
+
+  clearTimeout(messageTimer);
+
+  messageTimer =
+    setTimeout(() => {
+
+      message.classList.remove(
+        "show"
+      );
+
+    }, 900);
+}
+
+
+/* =====================================================
+   START GAME
+===================================================== */
+
+function startGame(){
+
+  running = true;
+  paused = false;
+
+  score = 0;
+  level = 1;
+  energy = 100;
+
+  speed = 25;
+
+  spawnTimer = 500;
+  orbTimer = 700;
+
+  playerLane = 0;
+  targetX = 0;
+
+  jumpY = 0;
+  jumpVelocity = 0;
+
+  runTime = 0;
+
+  /* REMOVE OLD OBSTACLES */
+
+  for(
+    let i = obstacles.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    obstacleGroup.remove(
+      obstacles[i].mesh
+    );
+  }
+
+  obstacles.length = 0;
+
+
+  /* REMOVE OLD ORBS */
+
+  for(
+    let i = orbs.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    orbGroup.remove(
+      orbs[i].mesh
+    );
+  }
+
+  orbs.length = 0;
+
+
+  /* RESET PLAYER */
+
+  player.position.x = 0;
+  player.position.y = 0;
+
+  player.rotation.set(
+    0,
+    0,
+    0
+  );
+
+
+  /* HIDE MENU */
+
+  screen.style.display =
+    "none";
+
+  pauseBtn.style.display =
+    "block";
+
+
+  last =
+    performance.now();
+
+  showMessage(
+    "GET READY"
+  );
+
+
+  setTimeout(() => {
+
+    if(
+      running &&
+      !paused
+    ){
+
+      showMessage(
+        "RUN!"
+      );
+
+    }
+
+  }, 700);
+}
+
+
+/* =====================================================
+   PAUSE GAME
+===================================================== */
+
+function pauseGame(){
+
+  if(!running)
+    return;
+
+  paused = true;
+
+  screen.style.display =
+    "flex";
+
+  homeCard.classList.add(
+    "hidden"
+  );
+
+  overCard.classList.add(
+    "hidden"
+  );
+
+  pauseCard.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* =====================================================
+   RESUME GAME
+===================================================== */
+
+function resumeGame(){
+
+  if(!running)
+    return;
+
+  paused = false;
+
+  screen.style.display =
+    "none";
+
+  pauseCard.classList.add(
+    "hidden"
+  );
+
+  last =
+    performance.now();
+}
+
+
+/* =====================================================
+   GAME OVER
+===================================================== */
+
+function gameOver(){
+
+  running = false;
+  paused = false;
+
+  if(
+    Math.floor(score) > best
+  ){
+
+    best =
+      Math.floor(score);
+
+    localStorage.setItem(
+      "neonEscapeBest",
+      best
+    );
+  }
+
+  finalScore.textContent =
+    Math.floor(score);
+
+  bestScore.textContent =
+    best;
+
+  screen.style.display =
+    "flex";
+
+  homeCard.classList.add(
+    "hidden"
+  );
+
+  pauseCard.classList.add(
+    "hidden"
+  );
+
+  overCard.classList.remove(
+    "hidden"
+  );
+
+  pauseBtn.style.display =
+    "none";
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function goHome(){
+
+  running = false;
+  paused = false;
+
+  screen.style.display =
+    "flex";
+
+  homeCard.classList.remove(
+    "hidden"
+  );
+
+  pauseCard.classList.add(
+    "hidden"
+  );
+
+  overCard.classList.add(
+    "hidden"
+  );
+
+  pauseBtn.style.display =
+    "none";
+}
+
+
+/* =====================================================
+   MOVE LEFT
+===================================================== */
+
+function moveLeft(){
+
+  if(
+    !running ||
+    paused
+  )
+    return;
+
+  playerLane =
+    Math.max(
+      -1,
+      playerLane - 1
+    );
+
+  targetX =
+    playerLane * 3.2;
+}
+
+
+/* =====================================================
+   MOVE RIGHT
+===================================================== */
+
+function moveRight(){
+
+  if(
+    !running ||
+    paused
+  )
+    return;
+
+  playerLane =
+    Math.min(
+      1,
+      playerLane + 1
+    );
+
+  targetX =
+    playerLane * 3.2;
+}
+
+
+/* =====================================================
+   JUMP
+===================================================== */
+
+function jump(){
+
+  if(
+    !running ||
+    paused
+  )
+    return;
+
+  if(
+    jumpY <= 0.01
+  ){
+
+    jumpVelocity = 11;
+
+  }
+}
+
+
+/* =====================================================
+   COLLISION
+===================================================== */
+
+function checkCollision(
+  obj,
+  radius
+){
+
+  const dx =
+    Math.abs(
+      obj.position.x -
+      player.position.x
+    );
+
+  const dz =
+    Math.abs(
+      obj.position.z -
+      player.position.z
+    );
+
+  if(
+    dx > radius
+  )
+    return false;
+
+  if(
+    dz > 1.6
+  )
+    return false;
+
+  /*
+    If player is high enough,
+    jump over obstacle.
+  */
+
+  if(
+    jumpY > 1.0
+  )
+    return false;
+
+  return true;
+}
+
+
+/* =====================================================
+   UPDATE
+===================================================== */
+
+function update(dt){
+
+  runTime += dt;
+
+
+  /* SCORE */
+
+  score +=
+    dt *
+    0.018 *
+    speed;
+
+
+  /* LEVEL */
+
+  level =
+    1 +
+    Math.floor(
+      score / 800
+    );
+
+
+  /* SPEED */
+
+  speed =
+    25 +
+    level * 2.1;
+
+
+  /* ENERGY */
+
+  energy -=
+    dt * 0.0045;
+
+
+  if(
+    energy <= 0
+  ){
+
+    energy = 0;
+
+    gameOver();
+
+    return;
+  }
+
+
+  /* PLAYER LANE */
+
+  player.position.x +=
+    (
+      targetX -
+      player.position.x
+    ) *
+    Math.min(
+      1,
+      dt * 0.012
+    );
+
+
+  /* PLAYER JUMP */
+
+  jumpVelocity -=
+    28 *
+    dt /
+    1000;
+
+  jumpY +=
+    jumpVelocity *
+    dt /
+    1000;
+
+  if(
+    jumpY < 0
+  ){
+
+    jumpY = 0;
+    jumpVelocity = 0;
+
+  }
+
+  player.position.y =
+    jumpY;
+
+
+  /* RUNNING ANIMATION */
+
+  const t =
+    runTime *
+    0.012;
+
+
+  if(leftArm)
+    leftArm.rotation.x =
+      Math.sin(t) * 0.85;
+
+  if(rightArm)
+    rightArm.rotation.x =
+      -Math.sin(t) * 0.85;
+
+  if(leftLeg)
+    leftLeg.rotation.x =
+      -Math.sin(t) * 0.8;
+
+  if(rightLeg)
+    rightLeg.rotation.x =
+      Math.sin(t) * 0.8;
+
+
+  if(body){
+
+    body.rotation.z =
+      Math.sin(t * 2) *
+      0.025;
+  }
+
+
+  /* =================================================
+     SPAWNING
+  ================================================= */
+
+  spawnTimer -= dt;
+  orbTimer -= dt;
+
+
+  if(
+    spawnTimer <= 0
+  ){
+
+    spawnObstacle();
+
+    spawnTimer =
+      Math.max(
+        360,
+        900 -
+        level * 28
+      ) +
+      Math.random() *
+      350;
+  }
+
+
+  if(
+    orbTimer <= 0
+  ){
+
+    spawnOrb();
+
+    orbTimer =
+      600 +
+      Math.random() *
+      650;
+  }
+
+
+  /* =================================================
+     OBSTACLES
+  ================================================= */
+
+  for(
+    let i =
+      obstacles.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    const o =
+      obstacles[i];
+
+    o.mesh.position.z +=
+      o.speed *
+      dt /
+      1000;
+
+
+    /* COLLISION */
+
+    if(
+      checkCollision(
+        o.mesh,
+        1.05
+      )
+    ){
+
+      energy -= 25;
+
+      showMessage(
+        energy > 0
+        ? "CRASH!"
+        : "GAME OVER"
+      );
+
+
+      obstacleGroup.remove(
+        o.mesh
+      );
+
+      obstacles.splice(
+        i,
+        1
+      );
+
+      continue;
+    }
+
+
+    /* PASSED */
+
+    if(
+      o.mesh.position.z >
+      15
+    ){
+
+      obstacleGroup.remove(
+        o.mesh
+      );
+
+      obstacles.splice(
+        i,
+        1
+      );
+
+      score += 20;
+    }
+  }
+
+
+  /* =================================================
+     ENERGY ORBS
+  ================================================= */
+
+  for(
+    let i =
+      orbs.length - 1;
+    i >= 0;
+    i--
+  ){
+
+    const o =
+      orbs[i];
+
+
+    o.mesh.position.z +=
+      o.speed *
+      dt /
+      1000;
+
+
+    o.mesh.rotation.x +=
+      dt * 0.004;
+
+    o.mesh.rotation.y +=
+      dt * 0.006;
+
+
+    o.mesh.position.y =
+      1.3 +
+      Math.sin(
+        runTime * 0.005 +
+        i
+      ) * 0.18;
+
+
+    /* COLLECT */
+
+    if(
+      checkCollision(
+        o.mesh,
+        0.75
+      )
+    ){
+
+      energy =
+        Math.min(
+          100,
+          energy + 8
+        );
+
+      score += 50;
+
+      showMessage(
+        "+ ENERGY"
+      );
+
+
+      orbGroup.remove(
+        o.mesh
+      );
+
+      orbs.splice(
+        i,
+        1
+      );
+
+      continue;
+    }
+
+
+    /* PASSED */
+
+    if(
+      o.mesh.position.z >
+      15
+    ){
+
+      orbGroup.remove(
+        o.mesh
+      );
+
+      orbs.splice(
+        i,
+        1
+      );
+    }
+  }
+
+
+  /* =================================================
+     CAMERA
+  ================================================= */
+
+  camera.position.x +=
+    (
+      player.position.x * 0.18 -
+      camera.position.x
+    ) *
+    dt *
+    0.006;
+
+
+  camera.position.y +=
+    (
+      5.1 +
+      jumpY * 0.12 -
+      camera.position.y
+    ) *
+    dt *
+    0.005;
+
+
+  camera.lookAt(
+    player.position.x * 0.35,
+    1.3 + jumpY * 0.1,
+    -13
+  );
+
+
+  /* =================================================
+     WORLD MOVEMENT
+  ================================================= */
+
+  roadGroup.children.forEach(
+    obj => {
+
+      /*
+        Only recycle objects
+        that are actually moving.
+      */
+
+      if(
+        obj.position.z >
+        25
+      ){
+
+        obj.position.z -=
+          480;
+      }
+    }
+  );
+
+
+  buildingGroup.children.forEach(
+    obj => {
+
+      if(
+        obj.position.z >
+        30
+      ){
+
+        obj.position.z -=
+          490;
+      }
+    }
+  );
+
+
+  /* HUD */
+
+  updateHUD();
+}
+
+
+/* =====================================================
+   HUD
+===================================================== */
+
+function updateHUD(){
+
+  scoreEl.textContent =
+    Math.floor(score);
+
+  levelEl.textContent =
+    level;
+
+  energyBar.style.width =
+    Math.max(
+      0,
+      energy
+    ) + "%";
+}
+
+
+/* =====================================================
+   BUTTON CONTROLS
+===================================================== */
+
+const leftButton =
+  document.getElementById(
+    "left"
+  );
+
+const rightButton =
+  document.getElementById(
+    "right"
+  );
+
+const jumpButton =
+  document.getElementById(
+    "jump"
+  );
+
+
+leftButton.addEventListener(
+  "pointerdown",
+  e => {
+
+    e.preventDefault();
+
+    moveLeft();
+
+  }
+);
+
+
+rightButton.addEventListener(
+  "pointerdown",
+  e => {
+
+    e.preventDefault();
+
+    moveRight();
+
+  }
+);
+
+
+jumpButton.addEventListener(
+  "pointerdown",
+  e => {
+
+    e.preventDefault();
+
+    jump();
+
+  }
+);
+
+
+/* =====================================================
+   MENU BUTTONS
+===================================================== */
+
+document
+  .getElementById("start")
+  .addEventListener(
+    "click",
+    startGame
+  );
+
+
+document
+  .getElementById("resume")
+  .addEventListener(
+    "click",
+    resumeGame
+  );
+
+
+document
+  .getElementById("restartPause")
+  .addEventListener(
+    "click",
+    startGame
+  );
+
+
+document
+  .getElementById("homePause")
+  .addEventListener(
+    "click",
+    goHome
+  );
+
+
+document
+  .getElementById("restart")
+  .addEventListener(
+    "click",
+    startGame
+  );
+
+
+document
+  .querySelector(
+    "#over #home"
+  )
+  .addEventListener(
+    "click",
+    goHome
+  );
+
+
+pauseBtn.addEventListener(
+  "click",
+  () => {
+
+    if(!running)
+      return;
+
+    if(paused)
+      resumeGame();
+
+    else
+      pauseGame();
+
+  }
+);
+
+
+/* =====================================================
+   CHARACTER SELECT
+===================================================== */
+
+document
+  .querySelectorAll(
+    ".character"
+  )
+  .forEach(
+    button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          document
+            .querySelectorAll(
+              ".character"
+            )
+            .forEach(
+              b =>
+                b.classList
+                 .remove("active")
+            );
+
+
+          button.classList.add(
+            "active"
+          );
+
+
+          selectedCharacter =
+            Number(
+              button.dataset.char
+            );
+
+
+          buildPlayer();
+
+        }
+      );
+
+    }
+  );
+
+
+/* =====================================================
+   KEYBOARD
+===================================================== */
+
+document.addEventListener(
+  "keydown",
+  e => {
+
+    const key =
+      e.key.toLowerCase();
+
+
+    if(
+      key === "arrowleft" ||
+      key === "a"
+    ){
+
+      moveLeft();
+
+    }
+
+
+    if(
+      key === "arrowright" ||
+      key === "d"
+    ){
+
+      moveRight();
+
+    }
+
+
+    if(
+      key === "arrowup" ||
+      key === "w" ||
+      key === " "
+    ){
+
+      e.preventDefault();
+
+      jump();
+
+    }
+
+
+    if(
+      key === "p"
+    ){
+
+      if(!running)
+        return;
+
+      if(paused)
+        resumeGame();
+
+      else
+        pauseGame();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   SWIPE CONTROLS
+===================================================== */
+
+let touchStartX = 0;
+let touchStartY = 0;
+
+
+renderer.domElement.addEventListener(
+  "touchstart",
+  e => {
+
+    const t =
+      e.touches[0];
+
+    touchStartX =
+      t.clientX;
+
+    touchStartY =
+      t.clientY;
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+renderer.domElement.addEventListener(
+  "touchend",
+  e => {
+
+    const t =
+      e.changedTouches[0];
+
+    const dx =
+      t.clientX -
+      touchStartX;
+
+    const dy =
+      t.clientY -
+      touchStartY;
+
+
+    if(
+      Math.abs(dx) >
+      Math.abs(dy)
+    ){
+
+      if(
+        Math.abs(dx) > 35
+      ){
+
+        if(dx < 0)
+          moveLeft();
+
+        else
+          moveRight();
+
+      }
+
+    }
+    else{
+
+      if(
+        dy < -35
+      ){
+
+        jump();
+
+      }
+
+    }
+
+  },
+  {
+    passive:true
+  }
+);
+
+
+/* =====================================================
+   AUTO PAUSE
+===================================================== */
+
+document.addEventListener(
+  "visibilitychange",
+  () => {
+
+    if(
+      document.hidden &&
+      running &&
+      !paused
+    ){
+
+      pauseGame();
+
+    }
+
+  }
+);
+
+
+/* =====================================================
+   RESIZE
+===================================================== */
+
+window.addEventListener(
+  "resize",
+  () => {
+
+    camera.aspect =
+      innerWidth /
+      innerHeight;
+
+    camera.updateProjectionMatrix();
+
+
+    renderer.setSize(
+      innerWidth,
+      innerHeight
+    );
+
+
+    renderer.setPixelRatio(
+      Math.min(
+        window.devicePixelRatio,
+        2
+      )
+    );
+
+  }
+);
+
+
+/* =====================================================
+   INITIALIZE
+===================================================== */
+
+goHome();
+
+updateHUD();
+
+
+/* =====================================================
+   3D RENDER LOOP
+===================================================== */
+
+function animate(){
+
+  requestAnimationFrame(
+    animate
+  );
+
+
+  const now =
+    performance.now();
+
+
+  const dt =
+    Math.min(
+      40,
+      now - last
+    );
+
+
+  last = now;
+
+
+  if(
+    running &&
+    !paused
+  ){
+
+    update(dt);
+
+  }
+
+
+  renderer.render(
+    scene,
+    camera
+  );
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+animate();
+
+</script>
+
+</body>
+</html>
